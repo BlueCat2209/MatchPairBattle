@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
 
 namespace Pikachu
 {
@@ -10,16 +7,20 @@ namespace Pikachu
     {
         [Header("Matrix Properties")]
         [SerializeField] GameManagement m_gameManagement;
+        [SerializeField] ColorButton[] m_buttonTypeList;
+        public Vector2 m_tableSize;   
+        
+        public ColorButton[,] m_playerTable;
         public ColorButton[,] m_opponentTable;
-        public ColorButton[,] m_table;
-        public Vector2 m_tableSize;
-        [SerializeField] ColorButton m_startObject;
-        [SerializeField] ColorButton m_endObject;
 
-        [Header("Button Properties")]
-        [SerializeField] ColorButton[] m_buttonTypeList;        
+        private ColorButton m_startObject;
+        private ColorButton m_endObject;
 
-        public struct Point
+        [Header("UI Properties")]        
+        [SerializeField] RectTransform m_playerUI;
+        [SerializeField] RectTransform m_opponentUI;
+            
+        private struct Point
         {
             public int x;
             public int y;
@@ -29,19 +30,14 @@ namespace Pikachu
                 this.y = y;
             }
         };
-
-        void Start()
-        {
-            if (PhotonNetwork.IsMasterClient)
-                CreateTable();
-        }
+        private const float m_buttonSize = 75f;
 
         [ContextMenu("Create table")]
-        private void CreateTable()
+        public void CreatePlayerTable()
         {
             int row = (int) m_tableSize.x;
             int column = (int) m_tableSize.y;
-            m_table = new ColorButton[row, column];
+            m_playerTable = new ColorButton[row, column];
             // Create random button
             for (int i = 0; i < (row * column) / 2; i++)
             {
@@ -50,50 +46,52 @@ namespace Pikachu
 
                 // Get random button location in table
                 int x1 = 0, y1 = 0;
-                while (m_table[x1, y1] != null)
+                while (m_playerTable[x1, y1] != null)
                 {
                     x1 = Random.Range(0, row);
                     y1 = Random.Range(0, column);
                 }
-                m_table[x1, y1] = Instantiate(m_buttonTypeList[random], this.transform);
+                m_playerTable[x1, y1] = Instantiate(m_buttonTypeList[random], m_playerUI);
+                m_playerTable[x1, y1].transform.SetParent(m_playerUI, false);
 
                 int x2 = 0, y2 = 0;
-                while (m_table[x2, y2] != null)
+                while (m_playerTable[x2, y2] != null)
                 {
                     x2 = Random.Range(0, row);
                     y2 = Random.Range(0, column);
                 }
-                m_table[x2, y2] = Instantiate(m_buttonTypeList[random], this.transform);
+                m_playerTable[x2, y2] = Instantiate(m_buttonTypeList[random], m_playerUI);
+                m_playerTable[x2, y2].transform.SetParent(m_playerUI, false);
             }
 
             // Set position
-            float rowStart = -(row / 2) + 0.5f; float collumnStart = (column / 2) - 0.5f;
+            float rowStart = - ((m_tableSize.x - 1) / 2) * m_buttonSize; float columnStart = - ((m_tableSize.y - 1) / 2) * m_buttonSize;
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
                 {
                     // Set position and location of button
-                    m_table[i, j].m_RectTransform.position = new Vector3(collumnStart - j, rowStart + i, 0);
-                    m_table[i, j].x = i; m_table[i, j].y = j;
+                    m_playerTable[i, j].m_RectTransform.localPosition = new Vector3(columnStart + j * m_buttonSize, rowStart + i * m_buttonSize, 0);
+                    m_playerTable[i, j].x = i; m_playerTable[i, j].y = j;
                 }
             }
             m_gameManagement.SendTableData();
         }                
-        public void CreateTable(byte[,] buttonCode, Vector2 tableSize)
+        public void CreateOpponentTable(byte[,] buttonCode, Vector2 tableSize)
         {
-            GameObject parent = new GameObject("Opponent Table");
-            parent.transform.position = Vector3.zero;            
-
             // Set position
-            float rowStart = -(tableSize.x / 2) + 0.5f; float collumnStart = (tableSize.y / 2) - 0.5f;
+            float rowStart = -((m_tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
+            // Create table
+            m_opponentTable = new ColorButton[(int)tableSize.x, (int)tableSize.y];
             for (int i = 0; i < tableSize.x; i++)
             {
                 for (int j = 0; j < tableSize.y; j++)
                 {
-                    // Create table
-                    var button = Instantiate(m_buttonTypeList[buttonCode[i, j]], parent.transform);
-                    button.GetComponent<ColorButton>().m_RectTransform.position = new Vector3(collumnStart - j, rowStart + i, 0);
-                    button.GetComponent<Button>().interactable = false;
+                    // Create button
+                    var button = Instantiate(m_buttonTypeList[buttonCode[i, j]], m_opponentUI);
+                    button.GetComponent<ColorButton>().m_RectTransform.localPosition = new Vector3(columnStart + j * m_buttonSize, rowStart + i * m_buttonSize, 0);
+                    m_opponentTable[i, j] = button;
+                    m_opponentTable[i, j].x = i; m_opponentTable[i, j].y = j;
                 }
             }
         }
@@ -120,18 +118,27 @@ namespace Pikachu
 
             if (CheckValidPair(m_startObject, m_endObject))
             {
-                m_startObject.m_IsObstacle = false;
-                m_startObject.m_Image.enabled = false;
-                m_startObject.GetComponent<Button>().interactable = false;
-
-                m_endObject.m_IsObstacle = false;
-                m_endObject.m_Image.enabled = false;
-                m_endObject.GetComponent<Button>().interactable = false;
+                HidePair(m_startObject, m_endObject);
+                m_gameManagement.SendPairData(m_startObject, m_endObject);
             }
+
+            // Turn off choosen mode
             m_startObject.transform.GetChild(0).gameObject.SetActive(false);
             m_endObject.transform.GetChild(0).gameObject.SetActive(false);
+            
+            // Renew object
             m_startObject = null;
-            m_endObject = null;            
+            m_endObject = null;
+        }
+        public void HidePair(ColorButton start, ColorButton end)
+        {
+            start.m_IsObstacle = false;
+            start.m_Image.enabled = false;
+            start.GetComponent<Button>().interactable = false;
+
+            end.m_IsObstacle = false;
+            end.m_Image.enabled = false;
+            end.GetComponent<Button>().interactable = false;
         }
         private bool CheckValidPair(ColorButton button1, ColorButton button2)
         {
@@ -178,9 +185,9 @@ namespace Pikachu
             for (int y = start; y < end; y++)
             {
                 // Has object between y1 and y2 on the line x
-                if (m_table[x, y].m_IsObstacle)
+                if (m_playerTable[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log(x + " " + y + " " + m_playerTable[x, y].m_IsObstacle);
                     return false;
                 }
             }
@@ -197,9 +204,9 @@ namespace Pikachu
             for (int x = start; x < end; x++)
             {
                 // Has object between y1 and y2 on the line x
-                if (m_table[x, y].m_IsObstacle)
+                if (m_playerTable[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log(x + " " + y + " " + m_playerTable[x, y].m_IsObstacle);
                     return false;
                 }
             }
@@ -302,7 +309,7 @@ namespace Pikachu
             if (CheckOnRowX(startPoint.y, endPoint.y, row)) // if line <1> exist
             {
 
-                while (!m_table[startPoint.x, column].m_IsObstacle && !m_table[endPoint.x, column])
+                while (!m_playerTable[startPoint.x, column].m_IsObstacle && !m_playerTable[endPoint.x, column])
                 {
                     if (CheckOnColumnY(startPoint.x, endPoint.x, column))
                     {
@@ -335,7 +342,7 @@ namespace Pikachu
 
             if (CheckOnColumnY(startPoint.x, endPoint.x, column))
             {
-                while (!m_table[row, startPoint.y].m_IsObstacle && !m_table[row, endPoint.y].m_IsObstacle)
+                while (!m_playerTable[row, startPoint.y].m_IsObstacle && !m_playerTable[row, endPoint.y].m_IsObstacle)
                 {
                     if (CheckOnRowX(startPoint.y, endPoint.y, row))
                     {

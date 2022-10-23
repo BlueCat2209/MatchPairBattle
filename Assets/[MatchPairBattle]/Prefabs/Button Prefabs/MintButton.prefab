@@ -38,7 +38,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -1.5, y: 0}
-  m_SizeDelta: {x: 1, y: 1}
+  m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6128169808717992044
 CanvasRenderer:
@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e53edba2a2206041a70d03c17e043d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_LevelManagement: {fileID: 0}
+  m_PikachuManagement: {fileID: 0}
   color: 3
   m_RectTransform: {fileID: 6128169808717992047}
   m_Image: {fileID: 6128169808717992045}

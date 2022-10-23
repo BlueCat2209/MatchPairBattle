@@ -8,8 +8,7 @@ namespace Pikachu
     public class ColorButton : MonoBehaviour
     {
         [SerializeField] PikachuManagement m_PikachuManagement;
-
-        public enum ColorType { red, yellow, green, mint, blue, darkblue, violet, pink }
+        public enum ColorType { blue, darkblue, green, mint, pink, red, violet, yellow }        
         public ColorType color;
 
         public RectTransform m_RectTransform;
