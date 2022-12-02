@@ -1,0 +1,21 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:ce62011c99cd96e23128a91bb3146dad:e4b14be71e8d358a3bac4bdb0fe591eb:e12ecc599f338eba494dff9601a9d7a7$
+#
+:format=40300
+:texture=Blinded.png
+:size=2048x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+blind_1;0;56;200;200; 0.5;0.5; 0;0;0;0
+blind_2;200;56;200;200; 0.5;0.5; 0;0;0;0
+blind_3;400;56;200;200; 0.5;0.5; 0;0;0;0
+blind_4;600;56;200;200; 0.5;0.5; 0;0;0;0
+damage_21;800;56;200;200; 0.5;0.5; 0;0;0;0
+damage_22;1000;56;200;200; 0.5;0.5; 0;0;0;0

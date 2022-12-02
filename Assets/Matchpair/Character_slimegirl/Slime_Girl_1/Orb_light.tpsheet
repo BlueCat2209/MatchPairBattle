@@ -1,0 +1,23 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:85532e9abcfcb884dbcd42fa1d83b222:77d35d65475161aa6abc8094e8e923d4:69f30b4b10b5785481d6417099041e4a$
+#
+:format=40300
+:texture=Orb_light.png
+:size=2048x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+orb_31;0;56;200;200; 0.5;0.5; 0;0;0;0
+orb_32;200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_1;400;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_2;600;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_3;800;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_4;1000;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_5;1200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_light_6;1400;56;200;200; 0.5;0.5; 0;0;0;0

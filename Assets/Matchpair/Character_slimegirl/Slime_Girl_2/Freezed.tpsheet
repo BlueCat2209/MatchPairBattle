@@ -1,0 +1,18 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:c56e5b87b20e04f4ff15064b1cbd6e11:da7d0bf8bf30ac43f0b106dc8f3b1f6e:df9419b1bf55d79dde7b69c661b23e2f$
+#
+:format=40300
+:texture=Freezed.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+damage_51;0;56;200;200; 0.5;0.5; 0;0;0;0
+damage_52;200;56;200;200; 0.5;0.5; 0;0;0;0
+freeze_1;400;56;200;200; 0.5;0.5; 0;0;0;0
