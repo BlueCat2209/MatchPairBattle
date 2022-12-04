@@ -1,0 +1,18 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:55ec83c32e451c63fe9c733e63ab3e0a:a470184a52bbcdbf9cad6a6598aaa131:6fcaf5e765d682370369bffe4f09d901$
+#
+:format=40300
+:texture=Blind.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+magic_01;0;56;200;200; 0.5;0.5; 0;0;0;0
+magic_02;200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_51;400;56;200;200; 0.5;0.5; 0;0;0;0

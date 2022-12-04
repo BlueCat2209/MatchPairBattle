@@ -1,0 +1,18 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:a0896b688016b19dbca33a7a30c1bf29:c7f72e37f7833baa3b91f89fc49dd3ed:8e38c95ab683d3ec47e64c2baa0da23e$
+#
+:format=40300
+:texture=Indle.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+book_01;0;56;200;200; 0.5;0.5; 0;0;0;0
+book_02;200;56;200;200; 0.5;0.5; 0;0;0;0
+book_03;400;56;200;200; 0.5;0.5; 0;0;0;0

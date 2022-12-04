@@ -1,0 +1,23 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:54c37c1426b5b42c41c141385d0c7886:ec17356a287624d58449bbaaa30bea28:9515e6f234ce9dc07a418049c68997ca$
+#
+:format=40300
+:texture=Cast_IceFire.png
+:size=2048x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+IceFire_1;0;56;200;200; 0.5;0.5; 0;0;0;0
+IceFire_2;200;56;200;200; 0.5;0.5; 0;0;0;0
+IceFire_3;400;56;200;200; 0.5;0.5; 0;0;0;0
+IceFire_4;600;56;200;200; 0.5;0.5; 0;0;0;0
+IceFire_5;800;56;200;200; 0.5;0.5; 0;0;0;0
+IceFire_6;1000;56;200;200; 0.5;0.5; 0;0;0;0
+orb_21;1200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_22;1400;56;200;200; 0.5;0.5; 0;0;0;0

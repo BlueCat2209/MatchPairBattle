@@ -1,0 +1,20 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:c813da81149737510b7a0dd7e2f5c3ad:dd56f500da1cb9a70d899d623f5b7071:3e69fbb3ca8915e7df6e5488246a6435$
+#
+:format=40300
+:texture=Cast_Light.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+Light_1;0;56;200;200; 0.5;0.5; 0;0;0;0
+Light_2;200;56;200;200; 0.5;0.5; 0;0;0;0
+Light_3;400;56;200;200; 0.5;0.5; 0;0;0;0
+orb_21;600;56;200;200; 0.5;0.5; 0;0;0;0
+orb_22;800;56;200;200; 0.5;0.5; 0;0;0;0

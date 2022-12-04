@@ -1,0 +1,18 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:03589e5fd9d6f0ff2b5884ca86dd7148:7399eae2e166ee5ceb79d941fbd0ff8a:0b2fcb53545a642f66f11ebceacc50ce$
+#
+:format=40300
+:texture=Cast_Steal.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+magic_01;0;56;200;200; 0.5;0.5; 0;0;0;0
+magic_02;200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_21;400;56;200;200; 0.5;0.5; 0;0;0;0

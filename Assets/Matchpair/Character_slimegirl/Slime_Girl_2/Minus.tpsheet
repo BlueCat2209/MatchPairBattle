@@ -1,0 +1,20 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:3edfb15e4049b20569203b045b17e799:cfb1322e2bf468c61e8401eff2d49aa4:d93b24ddb819f1d7aea5535a382ea7f8$
+#
+:format=40300
+:texture=Minus.png
+:size=1024x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+minus_1;0;56;200;200; 0.5;0.5; 0;0;0;0
+minus_2;200;56;200;200; 0.5;0.5; 0;0;0;0
+minus_3;400;56;200;200; 0.5;0.5; 0;0;0;0
+minus_4;600;56;200;200; 0.5;0.5; 0;0;0;0
+minus_5;800;56;200;200; 0.5;0.5; 0;0;0;0

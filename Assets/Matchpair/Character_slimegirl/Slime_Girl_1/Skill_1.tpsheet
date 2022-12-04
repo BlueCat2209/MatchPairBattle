@@ -1,0 +1,25 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:6e81772e3561611e210cc7f62757b4b3:98ae138b62e233148c3561df1639b4aa:d5055531e49774c76ab0911a76570fea$
+#
+:format=40300
+:texture=Skill_1.png
+:size=2048x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+orb_31;0;56;200;200; 0.5;0.5; 0;0;0;0
+orb_32;200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_1;400;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_2;600;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_3;800;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_4;1000;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_5;1200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_6;1400;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_7;1600;56;200;200; 0.5;0.5; 0;0;0;0
+orb_glow_8;1800;56;200;200; 0.5;0.5; 0;0;0;0

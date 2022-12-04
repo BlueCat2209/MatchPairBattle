@@ -1,0 +1,23 @@
+#
+# Sprite sheet data for Unity.
+#
+# To import these sprites into your Unity project, download "TexturePackerImporter":
+# https://www.codeandweb.com/texturepacker/unity
+#
+# $TexturePacker:SmartUpdate:7df410fb48e8c2b5f72387340125c5e4:2029f4dea18263610784f86e30120fa1:7cdc4a0618bd05496e0d7dea023faab4$
+#
+:format=40300
+:texture=Icefire.png
+:size=2048x256
+:pivotpoints=enabled
+:borders=disabled
+:alphahandling=ClearTransparentPixels
+
+Icefire_1;0;56;200;200; 0.5;0.5; 0;0;0;0
+Icefire_2;200;56;200;200; 0.5;0.5; 0;0;0;0
+Icefire_3;400;56;200;200; 0.5;0.5; 0;0;0;0
+Icefire_4;600;56;200;200; 0.5;0.5; 0;0;0;0
+Icefire_5;800;56;200;200; 0.5;0.5; 0;0;0;0
+Icefire_6;1000;56;200;200; 0.5;0.5; 0;0;0;0
+orb_51;1200;56;200;200; 0.5;0.5; 0;0;0;0
+orb_52;1400;56;200;200; 0.5;0.5; 0;0;0;0
