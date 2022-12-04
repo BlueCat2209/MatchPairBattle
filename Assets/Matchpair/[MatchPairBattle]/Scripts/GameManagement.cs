@@ -1,27 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 using UnityEngine.UI;
+
 using Pikachu;
 using Network;
+
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 
 public class GameManagement : MonoBehaviour
-{    
+{
     [Header("BASIC PROPERTIES")]
-    [SerializeField] PikachuManagement m_pikachuManagement;
+    [SerializeField] PikachuTable m_playerTable;
+    [SerializeField] PikachuTable m_opponentTable;
     [SerializeField] float m_targetPoint;
     [SerializeField] float m_playerPoint;
     [SerializeField] float m_opponentPoint;
 
     [Header("UI PROPERTIES")]
-    [SerializeField] CanvasGroup m_playerTable;
+    [SerializeField] CanvasGroup m_playerPanel;
     [SerializeField] Image m_playerPointBar;
     [SerializeField] RectTransform m_playerResultPanel;
     [Space]
-    [SerializeField] CanvasGroup m_opponentTable;
+    [SerializeField] CanvasGroup m_opponentPanel;
     [SerializeField] Image m_opponentPointBar;
     [SerializeField] RectTransform m_opponentResultPanel;
 
@@ -32,13 +36,24 @@ public class GameManagement : MonoBehaviour
     [SerializeField] GameObject m_chestImage;
     [SerializeField] GameObject m_arrowImage;
 
+    public static GameManagement Instance => m_instance;
+    private static GameManagement m_instance;
+    private bool m_isBeingStealed = false; 
+
     private void OnEnable() => PhotonNetwork.NetworkingClient.EventReceived += OnEventReceive;
-    private void OnDisable() => PhotonNetwork.NetworkingClient.EventReceived -= OnEventReceive;    
+    private void OnDisable() => PhotonNetwork.NetworkingClient.EventReceived -= OnEventReceive;
+    private void Awake()
+    {
+        if (m_instance == null)
+        {
+            m_instance = this;
+        }
+    }
     private void Update()
     {
-        if (m_pikachuManagement.CheckTableEmpty())
+        if (m_playerTable.CheckTableEmpty())
         {
-            m_pikachuManagement.CreatePlayerTable();
+            m_playerTable.CreatePlayerTable();
         }
     }
 
@@ -75,19 +90,28 @@ public class GameManagement : MonoBehaviour
         }
 
         // Create table
-        m_pikachuManagement.CreateOpponentTable(tableCode, tableSize);
+        m_opponentTable.CreateTable(tableCode, tableSize);
     }
     protected virtual void SetOpponentPairData(object[] data)
     {           
         Vector2 startCor = (Vector2)data[0];
         Vector2 endCor = (Vector2)data[1];
         AnimalButton.AnimalType type = (AnimalButton.AnimalType)((byte)data[2]);
-
-        AnimalButton start = m_pikachuManagement.m_opponentTable[(int)startCor.x, (int)startCor.y];
-        AnimalButton end = m_pikachuManagement.m_opponentTable[(int)endCor.x, (int)endCor.y];
+        
+        if (m_isBeingStealed)
+        {
+            AnimalButton start = m_playerTable.m_table[(int)startCor.x, (int)startCor.y];
+            AnimalButton end = m_playerTable.m_table[(int)endCor.x, (int)endCor.y];
+            m_playerTable.HidePair(start, end);
+        }
+        else
+        {
+            AnimalButton start = m_opponentTable.m_table[(int)startCor.x, (int)startCor.y];
+            AnimalButton end = m_opponentTable.m_table[(int)endCor.x, (int)endCor.y];
+            m_opponentTable.HidePair(start, end);
+        }
 
         CalculateOpponentPoint(type);
-        m_pikachuManagement.HidePair(start, end);
     }
     
     public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalButton.AnimalType type)
@@ -115,8 +139,8 @@ public class GameManagement : MonoBehaviour
     public void SendPlayerTableData()
     {
         // Prepare table size
-        int row = (int)m_pikachuManagement.m_tableSize.x;
-        int column = (int)m_pikachuManagement.m_tableSize.y;
+        int row = (int)m_playerTable.m_tableSize.x;
+        int column = (int)m_playerTable.m_tableSize.y;
         Vector2 tableSize = new Vector2(row, column);
             
         // Prepare table data
@@ -126,7 +150,7 @@ public class GameManagement : MonoBehaviour
             byte[] tmp = new byte[column];
             for (int j = 0; j < column; j++)
             {
-                tmp[j] = (byte)m_pikachuManagement.m_playerTable[i, j].type;
+                tmp[j] = (byte)m_playerTable.m_table[i, j].type;
             }
             tableCode.Add(tmp);            
         }
@@ -167,10 +191,10 @@ public class GameManagement : MonoBehaviour
                         CastFreeze();
                         break;
                     case 2:
-                        CastFreeze();
+                        CastSteal();
                         break;
                     case 3:
-                        CastFreeze();
+                        CastSteal();
                         break;
                 }
                 break;
@@ -196,10 +220,10 @@ public class GameManagement : MonoBehaviour
                         HitFreeze();
                         break;
                     case 2:
-                        HitFreeze();
+                        HitSteal();
                         break;
                     case 3:
-                        HitFreeze();
+                        HitSteal();
                         break;
                 }
                 break;
@@ -260,6 +284,7 @@ public class GameManagement : MonoBehaviour
     }
     private void HitSteal()
     {
+        m_isBeingStealed = true;
         var chestImage = Instantiate(m_chestImage, m_opponentTable.transform);
         StartCoroutine(IE_StartSteal(chestImage.GetComponent<Image>(), 1f));
     }
@@ -295,7 +320,7 @@ public class GameManagement : MonoBehaviour
     // STEAL SKILL
     private IEnumerator IE_StartSteal(Image chestImage, float speed)
     {
-        m_opponentTable.blocksRaycasts = true;
+        m_opponentPanel.blocksRaycasts = true;
         float time = 0;
         while (time < 1)
         {
@@ -317,7 +342,8 @@ public class GameManagement : MonoBehaviour
         }
         chestImage.fillAmount = 0;
         Destroy(chestImage.gameObject);
-        m_opponentTable.blocksRaycasts = false;
+        m_isBeingStealed = false;
+        m_opponentPanel.blocksRaycasts = false;
     }
     #endregion               
 }

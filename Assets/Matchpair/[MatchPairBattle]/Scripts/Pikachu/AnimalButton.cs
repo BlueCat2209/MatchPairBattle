@@ -7,7 +7,7 @@ namespace Pikachu
 {
     public class AnimalButton : MonoBehaviour
     {
-        private PikachuManagement m_PikachuManagement;
+        private PikachuTable m_PikachuTable;
         public enum AnimalType 
         { 
             BlackCat, BrownCat, GreyCat, OrangeCat, WhiteCat,
@@ -27,14 +27,21 @@ namespace Pikachu
         // Start is called before the first frame update
         void Start()
         {
-            m_IsObstacle = true;
-            m_PikachuManagement = FindObjectOfType<PikachuManagement>();
+            m_IsObstacle = true;            
             m_RectTransform = GetComponent<RectTransform>();
+            m_PikachuTable = GetComponentInParent<PikachuTable>();
         }
 
         public void OnButtonClicked()
         {
-            m_PikachuManagement.OnButtonClicked(this.gameObject.GetComponent<AnimalButton>());
-        }  
+            m_PikachuTable.OnButtonClicked(this.gameObject.GetComponent<AnimalButton>());
+        }
+        public void OnHideButton()
+        {
+            m_IsObstacle = false;
+            m_Image.enabled = false;
+            this.gameObject.SetActive(false);
+            this.GetComponent<Button>().interactable = false;            
+        }
     }
 }
