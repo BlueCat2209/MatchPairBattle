@@ -44,7 +44,7 @@ namespace Pikachu
             for (int i = 0; i < buttonAmount; i++)
             {
                 // Create random button type
-                int random = Random.Range(0, m_buttonTypeList.Length - 1);
+                int random = Random.Range(0, m_buttonTypeList.Length);
 
                 // Get random button location in table
                 int x1 = 0, y1 = 0;

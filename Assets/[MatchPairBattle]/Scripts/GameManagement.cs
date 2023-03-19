@@ -21,20 +21,29 @@ public class GameManagement : MonoBehaviour
     [SerializeField] float m_opponentPoint;
 
     [Header("UI PROPERTIES")]
-    [SerializeField] CanvasGroup m_playerPanel;
-    [SerializeField] Image m_playerPointBar;
+    [SerializeField] CanvasGroup m_playerPanel;    
     [SerializeField] RectTransform m_playerResultPanel;
     [Space]
-    [SerializeField] CanvasGroup m_opponentPanel;
-    [SerializeField] Image m_opponentPointBar;
+    [SerializeField] CanvasGroup m_opponentPanel;    
     [SerializeField] RectTransform m_opponentResultPanel;
 
-    [Header("SKILL PROPERTIES")]    
-    [Header("Freeze")]
-    [SerializeField] GameObject m_freezeImage;
-    [Header("Steal")]
-    [SerializeField] GameObject m_chestImage;
-    [SerializeField] GameObject m_arrowImage;
+    [Header("ELEMENTS PROPERTIES")]
+    [SerializeField] int m_stackAmount;
+    [Header("Ice")]
+    [SerializeField] Image m_iceElement;
+    [SerializeField] Button m_iceSkill;
+    [Header("Air")]
+    [SerializeField] Image m_airElement;
+    [SerializeField] Button m_airSkill;
+    [Header("Wood")]
+    [SerializeField] Image m_woodElement;
+    [SerializeField] Button m_woodSkill;
+    [Header("Fire")]
+    [SerializeField] Image m_fireElement;
+    [SerializeField] Button m_fireSkill;
+    [Header("Earth")]
+    [SerializeField] Image m_earthElement;
+    [SerializeField] Button m_earthSkill;
 
     public static GameManagement Instance => m_instance;
     private static GameManagement m_instance;
@@ -93,30 +102,21 @@ public class GameManagement : MonoBehaviour
         m_opponentTable.CreateTable(tableCode, tableSize);
     }
     protected virtual void SetOpponentPairData(object[] data)
-    {           
+    {        
+        // Extract data
         Vector2 startCor = (Vector2)data[0];
         Vector2 endCor = (Vector2)data[1];
         AnimalButton.AnimalType type = (AnimalButton.AnimalType)((byte)data[2]);
         
-        if (m_isBeingStealed)
-        {
-            AnimalButton start = m_playerTable.m_table[(int)startCor.x, (int)startCor.y];
-            AnimalButton end = m_playerTable.m_table[(int)endCor.x, (int)endCor.y];
-            m_playerTable.HidePair(start, end);
-        }
-        else
-        {
-            AnimalButton start = m_opponentTable.m_table[(int)startCor.x, (int)startCor.y];
-            AnimalButton end = m_opponentTable.m_table[(int)endCor.x, (int)endCor.y];
-            m_opponentTable.HidePair(start, end);
-        }
-
-        CalculateOpponentPoint(type);
+        // Process data
+        AnimalButton start = m_opponentTable.m_table[(int)startCor.x, (int)startCor.y];
+        AnimalButton end = m_opponentTable.m_table[(int)endCor.x, (int)endCor.y];
+        m_opponentTable.HidePair(start, end);
     }
     
     public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalButton.AnimalType type)
     {
-        CalculatePlayerPoint(type);
+        CalculatePlayerSkill(type);
 
         // Prepare start & end Cordinates
         Vector2 startCor = new Vector2(start.x, start.y);
@@ -176,60 +176,29 @@ public class GameManagement : MonoBehaviour
             );
     }
 
-    private void CalculatePlayerPoint(AnimalButton.AnimalType type)
+    private void CalculatePlayerSkill(AnimalButton.AnimalType type)
     {
         switch (type)
         {
-            case AnimalButton.AnimalType.Special:
-                int skillCode = Random.Range(0, 4);
-                switch (skillCode)
-                {
-                    case 0:
-                        CastFreeze();
-                        break;
-                    case 1:
-                        CastFreeze();
-                        break;
-                    case 2:
-                        CastSteal();
-                        break;
-                    case 3:
-                        CastSteal();
-                        break;
-                }
+            case AnimalButton.AnimalType.Fire:
+                m_fireSkill.interactable = (m_fireElement.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
+                m_fireElement.fillAmount += 1f / m_stackAmount;
                 break;
-            default:
-                m_playerPoint += 10;
-                m_playerPointBar.fillAmount = m_playerPoint / m_targetPoint;
+            case AnimalButton.AnimalType.Ice:
+                m_iceSkill.interactable = (m_iceElement.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
+                m_iceElement.fillAmount += 1f / m_stackAmount;
                 break;
-        }
-        CheckGameFinished();
-    }
-    private void CalculateOpponentPoint(AnimalButton.AnimalType type)
-    {
-        switch (type)
-        {
-            case AnimalButton.AnimalType.Special:
-                int skillCode = Random.Range(0, 4);
-                switch (skillCode)
-                {
-                    case 0:
-                        HitFreeze();
-                        break;
-                    case 1:
-                        HitFreeze();
-                        break;
-                    case 2:
-                        HitSteal();
-                        break;
-                    case 3:
-                        HitSteal();
-                        break;
-                }
+            case AnimalButton.AnimalType.Earth:
+                m_earthSkill.interactable = (m_earthElement.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
+                m_earthElement.fillAmount += 1f / m_stackAmount;
                 break;
-            default:
-                m_opponentPoint += 10;
-                m_opponentPointBar.fillAmount = m_opponentPoint / m_targetPoint;
+            case AnimalButton.AnimalType.Wood:
+                m_woodSkill.interactable = (m_woodElement.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
+                m_woodElement.fillAmount += 1f / m_stackAmount;
+                break;
+            case AnimalButton.AnimalType.Air:
+                m_airSkill.interactable = (m_airElement.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
+                m_airElement.fillAmount += 1f / m_stackAmount;
                 break;
         }
         CheckGameFinished();
@@ -255,95 +224,34 @@ public class GameManagement : MonoBehaviour
     }
 
     #region Special Skills
-    // CAST SKILL
-    private void CastFreeze()
+    public void CastFireSkill()
     {
-        // Player effect
-
-        // Opponent effect
-        var freezeImage = Instantiate(m_freezeImage, m_opponentTable.transform);
-        StartCoroutine(IE_Freeze(freezeImage.GetComponent<Image>(), 1));        
+        m_fireElement.fillAmount = 0;
+        m_fireSkill.interactable = false;        
     }
-    private void CastSteal()
+    public void CastIceSkill()
     {
-        // Player effect
-        var chestImage = Instantiate(m_chestImage, m_playerTable.transform);
-        StartCoroutine(IE_StartSteal(chestImage.GetComponent<Image>(), 1f));
-        // Opponent effect
+        m_iceElement.fillAmount = 0;
+        m_iceSkill.interactable = false;
     }
-
-    // HIT SKILL
-    private void HitFreeze()
+    public void CastWoodSkill()
     {
-        // Player effect
-        var freezeImage = Instantiate(m_freezeImage, m_playerTable.transform);
-        StartCoroutine(IE_Freeze(freezeImage.GetComponent<Image>(), 1));
-
-        // Opponent effect
-
+        m_woodElement.fillAmount = 0;
+        m_woodSkill.interactable = false;
     }
-    private void HitSteal()
+    public void CastEarthSkill()
     {
-        m_isBeingStealed = true;
-        var chestImage = Instantiate(m_chestImage, m_opponentTable.transform);
-        StartCoroutine(IE_StartSteal(chestImage.GetComponent<Image>(), 1f));
+        m_earthElement.fillAmount = 0;
+        m_earthSkill.interactable = false;
+    }
+    public void CastAirSkill()
+    {
+        m_airElement.fillAmount = 0;
+        m_airSkill.interactable = false;
     }
     #endregion
 
     #region Coroutine
-    // FREEZE SKILL
-    private IEnumerator IE_Freeze(Image freezeImage, float speed)
-    {
-        float time = 0;
-        while (time < 1)
-        {
-            freezeImage.fillAmount = time;
-            time += Time.deltaTime * speed;            
-            yield return null;
-        }        
-        freezeImage.fillAmount = 1;
-        StartCoroutine(IE_Unfreeze(freezeImage, 0.1f));
-    }
-    private IEnumerator IE_Unfreeze(Image freezeImage, float speed)
-    {
-        float time = 0;
-        while (time < 1)
-        {
-            freezeImage.fillAmount = 1 - time;
-            time += Time.deltaTime * speed;            
-            yield return null;
-        }
-        freezeImage.fillAmount = 0;
-        Destroy(freezeImage.gameObject);
-    }
 
-    // STEAL SKILL
-    private IEnumerator IE_StartSteal(Image chestImage, float speed)
-    {
-        m_opponentPanel.blocksRaycasts = true;
-        float time = 0;
-        while (time < 1)
-        {
-            chestImage.fillAmount = time;
-            time += Time.deltaTime * speed;
-            yield return null;
-        }
-        chestImage.fillAmount = 1;
-        StartCoroutine(IE_EndSteal(chestImage, 0.1f));
-    }
-    private IEnumerator IE_EndSteal(Image chestImage, float speed)
-    {
-        float time = 0;
-        while (time < 1)
-        {
-            chestImage.fillAmount = 1 - time;
-            time += Time.deltaTime * speed;
-            yield return null;
-        }
-        chestImage.fillAmount = 0;
-        Destroy(chestImage.gameObject);
-        m_isBeingStealed = false;
-        m_opponentPanel.blocksRaycasts = false;
-    }
     #endregion               
 }
