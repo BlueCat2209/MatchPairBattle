@@ -10,10 +10,7 @@ namespace Pikachu
         private PikachuTable m_PikachuTable;
         public enum AnimalType 
         { 
-            BlackCat, BrownCat, GreyCat, OrangeCat, WhiteCat,
-            BlackDuck, BlueDuck, GreenDuck, WhiteDuck, YellowDuck,
-            BlackPig, BluePig, BrownPig, PinkPig, WhitePig,
-            Special
+            Fire, Ice, Wood, Earth, Air            
         }        
         public AnimalType type;
 

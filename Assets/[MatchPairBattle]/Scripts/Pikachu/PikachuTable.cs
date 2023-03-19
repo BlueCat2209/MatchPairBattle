@@ -6,8 +6,7 @@ namespace Pikachu
     public class PikachuTable : MonoBehaviour
     {
         [Header("Matrix Properties")]        
-        [SerializeField] AnimalButton[] m_buttonTypeList;
-        [SerializeField] int m_specialButtonAmount;
+        [SerializeField] AnimalButton[] m_buttonTypeList;        
         public Vector2 m_tableSize;           
         public AnimalButton[,] m_table;                
 
@@ -35,41 +34,17 @@ namespace Pikachu
         public void CreatePlayerTable()
         {
             int row = (int) m_tableSize.x;
-            int column = (int) m_tableSize.y;
-            int specialButton = (byte)AnimalButton.AnimalType.Special;
-            int normalButtonAmount = ((row * column) / 2) - m_specialButtonAmount;
+            int column = (int) m_tableSize.y;            
+            int buttonAmount = ((row * column) / 2);
 
             m_pairAmount = (int)((m_tableSize.x * m_tableSize.y / 2));
             m_table = new AnimalButton[row, column];
 
-            // Create special button
-            for (int i = 0; i < m_specialButtonAmount; i++)
-            {
-                // Get random button location in table
-                int x1 = 0, y1 = 0;
-                while (m_table[x1, y1] != null)
-                {
-                    x1 = Random.Range(0, row);
-                    y1 = Random.Range(0, column);
-                }
-                m_table[x1, y1] = Instantiate(m_buttonTypeList[specialButton], this.transform);
-                m_table[x1, y1].transform.SetParent(this.transform, false);
-
-                int x2 = 0, y2 = 0;
-                while (m_table[x2, y2] != null)
-                {
-                    x2 = Random.Range(0, row);
-                    y2 = Random.Range(0, column);
-                }
-                m_table[x2, y2] = Instantiate(m_buttonTypeList[specialButton], this.transform);
-                m_table[x2, y2].transform.SetParent(this.transform, false);
-            }
-
             // Create normal button
-            for (int i = 0; i < normalButtonAmount; i++)
+            for (int i = 0; i < buttonAmount; i++)
             {
                 // Create random button type
-                int random = Random.Range(0, m_buttonTypeList.Length - 1);
+                int random = Random.Range(0, m_buttonTypeList.Length);
 
                 // Get random button location in table
                 int x1 = 0, y1 = 0;
