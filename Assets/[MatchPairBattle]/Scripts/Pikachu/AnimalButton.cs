@@ -10,8 +10,7 @@ namespace Pikachu
         private PikachuTable m_PikachuTable;
         public enum AnimalType 
         { 
-            Fire, Ice, Wood, Earth, Air,
-            Special
+            Fire, Ice, Wood, Earth, Air            
         }        
         public AnimalType type;
 
