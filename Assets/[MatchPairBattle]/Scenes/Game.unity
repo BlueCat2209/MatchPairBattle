@@ -238,7 +238,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2014473258}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: CastFireSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &107268919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -783,7 +795,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2142030941}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: CastWoodSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &805949505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1597,7 +1621,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 954959520}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: CastIceSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1640348258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1943,7 +1979,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1155239688}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: CastAirSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1726296556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2065,7 +2113,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1601892877}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: CastEarthSkill
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1729616899
 MonoBehaviour:
   m_ObjectHideFlags: 0
