@@ -22,7 +22,9 @@ namespace Network
         public virtual void CreateRoom()
         {
             Debug.Log(PhotonNetwork.LocalPlayer.NickName + " create a room with name: " + m_createRoomInput.text);
-            PhotonNetwork.CreateRoom(m_createRoomInput.text);
+            RoomOptions roomOptions = new RoomOptions();
+            roomOptions.MaxPlayers = 2;
+            PhotonNetwork.CreateRoom(m_createRoomInput.text, roomOptions);
         }
         public virtual void JoinRoom()
         {
@@ -71,7 +73,7 @@ namespace Network
 
             foreach (var room in roomList)
             {
-                if (room.RemovedFromList) RoomRemove(room);
+                if (room.RemovedFromList || room.PlayerCount == room.MaxPlayers) RoomRemove(room);
                 else RoomAdd(room);
             }
             UpdateRoomListUI();
