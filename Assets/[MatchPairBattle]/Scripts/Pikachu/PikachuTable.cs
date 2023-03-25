@@ -13,10 +13,13 @@ namespace Pikachu
         [Header("Additional Properties")]                      
         [SerializeField] AudioSource m_clickAudio;
 
-        private AnimalButton m_startObject;
-        private AnimalButton m_endObject;
+        public int PairAmount => m_pairAmount;
+        public bool IsTableEmpty => (m_pairAmount <= 0) ? true : false;        
+        
         private int m_pairAmount;
-        private const float m_buttonSize = 75f;  
+        private const float m_buttonSize = 75f;
+        private AnimalButton m_startObject;
+        private AnimalButton m_endObject;        
         
         private struct Point
         {
@@ -85,6 +88,8 @@ namespace Pikachu
             float rowStart = -((m_tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
             // Create table
             m_table = new AnimalButton[(int)tableSize.x, (int)tableSize.y];
+            m_pairAmount = (int)((m_tableSize.x * m_tableSize.y / 2));
+
             for (int i = 0; i < tableSize.x; i++)
             {
                 for (int j = 0; j < tableSize.y; j++)
@@ -123,8 +128,7 @@ namespace Pikachu
             }
 
             if (CheckValidPair(m_startObject, m_endObject))
-            {
-                m_pairAmount--;
+            {                
                 HidePair(m_startObject, m_endObject);
                 GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.type);
             }
@@ -139,10 +143,10 @@ namespace Pikachu
         }
         public void HidePair(AnimalButton start, AnimalButton end)
         {
+            m_pairAmount--;
             start.OnHideButton();
             end.OnHideButton();            
-        }
-        public bool CheckTableEmpty() => (m_pairAmount == 0) ? true : false;
+        }        
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {
             if (button1.type != button2.type) return false;
