@@ -939,7 +939,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_playerTable: {fileID: 1683186416}
   m_opponentTable: {fileID: 1862854672}
-  m_targetTime: 30
+  m_targetTime: 300
   m_countDownImage: {fileID: 1683186413}
   m_gradientColor:
     serializedVersion: 2
