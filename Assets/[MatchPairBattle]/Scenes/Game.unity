@@ -1833,6 +1833,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_buttonTypeList:
+  - {fileID: 4645621206805607640, guid: ca26e426c80418845991f1c075820048, type: 3}
   - {fileID: 4645621206805607640, guid: 5d05804ef2923094abdb77d7532741b2, type: 3}
   - {fileID: 4645621206805607640, guid: ddf005578a8eb8d41bd62bdf73a62372, type: 3}
   - {fileID: 4645621206805607640, guid: fd347c8eac8c6a74b81e7256e4ea818b, type: 3}
@@ -2211,6 +2212,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_buttonTypeList:
+  - {fileID: 4645621206805607640, guid: ca26e426c80418845991f1c075820048, type: 3}
   - {fileID: 4645621206805607640, guid: 5d05804ef2923094abdb77d7532741b2, type: 3}
   - {fileID: 4645621206805607640, guid: ddf005578a8eb8d41bd62bdf73a62372, type: 3}
   - {fileID: 4645621206805607640, guid: fd347c8eac8c6a74b81e7256e4ea818b, type: 3}
