@@ -81,7 +81,19 @@ public class GameManagement : MonoBehaviour
         }
         else
         {
-            SetGameFinish(m_playerTable.PairAmount < m_opponentTable.PairAmount);
+            if (m_playerTable.PairAmount < m_opponentTable.PairAmount)
+            {
+                SetGameFinish(Result.VICTORY);
+            }
+            else
+            if (m_playerTable.PairAmount > m_opponentTable.PairAmount)
+            {
+                SetGameFinish(Result.DEFEATED);
+            }
+            else
+            {
+                SetGameFinish(Result.DRAW);
+            }            
         }    
     }
 
@@ -133,13 +145,13 @@ public class GameManagement : MonoBehaviour
         m_opponentTable.HidePair(start, end);
         if (m_opponentTable.IsTableEmpty)
         {
-            SetGameFinish(false);
+            SetGameFinish(Result.DEFEATED);
         }
     }
     
     public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalButton.AnimalType type)
     {
-        if (m_playerTable.IsTableEmpty) SetGameFinish(true);
+        if (m_playerTable.IsTableEmpty) SetGameFinish(Result.VICTORY);
         CalculatePlayerSkill(type);
 
         // Prepare start & end Cordinates
@@ -226,18 +238,33 @@ public class GameManagement : MonoBehaviour
                 break;
         }        
     }
-    private void SetGameFinish(bool isPlayerWin)
+    private void SetGameFinish(Result gameResult)
     {
-        if (isPlayerWin)
+        switch (gameResult)
         {
-            m_endGameCanvas.gameObject.SetActive(true);
-            m_textResult.text = "VICTORY";
-            m_textScore.text = "Score: " + 0;
-        }
-        else
-        {
-            m_endGameCanvas.gameObject.SetActive(true);
-            m_textResult.text = "DEFEATED";
+            case Result.VICTORY:
+                {
+                    m_endGameCanvas.gameObject.SetActive(true);
+                    m_textScore.text = "Score: " + FinalPoint;
+                    m_textResult.text = "VICTORY";                    
+                }
+            break;
+
+            case Result.DEFEATED:
+                {
+                    m_endGameCanvas.gameObject.SetActive(true);
+                    m_textScore.text = "Score: " + FinalPoint;
+                    m_textResult.text = "DEFEATED";                    
+                }
+            break;
+
+            case Result.DRAW:
+                {
+                    m_endGameCanvas.gameObject.SetActive(true);
+                    m_textScore.text = "Score: " + FinalPoint;
+                    m_textResult.text = "DRAW";                    
+                }
+                break;
         }
     }
 
