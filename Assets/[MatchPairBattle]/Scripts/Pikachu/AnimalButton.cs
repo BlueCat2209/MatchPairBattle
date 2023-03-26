@@ -10,9 +10,10 @@ namespace Pikachu
         private PikachuTable m_PikachuTable;
         public enum AnimalType 
         { 
-            Fire, Ice, Wood, Earth, Air            
+            Fire, Ice, Wood, Earth, Air, None
         }        
-        public AnimalType type;
+        private AnimalType m_type;
+        public AnimalType Type => m_type;
 
         public RectTransform m_RectTransform;
         public Image m_Image;
@@ -37,6 +38,7 @@ namespace Pikachu
         {
             m_IsObstacle = false;
             m_Image.enabled = false;
+            m_type = AnimalType.None;
             this.gameObject.SetActive(false);
             this.GetComponent<Button>().interactable = false;            
         }
