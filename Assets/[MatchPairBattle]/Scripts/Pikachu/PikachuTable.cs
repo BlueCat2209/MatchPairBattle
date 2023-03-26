@@ -1,14 +1,19 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Pikachu
 {
     public class PikachuTable : MonoBehaviour
     {
         [Header("Matrix Properties")]        
-        [SerializeField] AnimalButton[] m_buttonTypeList;        
-        public Vector2 m_tableSize;           
-        public AnimalButton[,] m_table;                
+        [SerializeField] AnimalButton[] m_buttonTypeList;
+        [SerializeField] Vector2 m_tableSize;
+        private AnimalButton[,] m_table;
+
+        public AnimalButton[,] Table => m_table;
+        public Vector2 TableSize => m_tableSize;
+        public int ButtonAmount => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
 
         [Header("Additional Properties")]                      
         [SerializeField] AudioSource m_clickAudio;
@@ -130,7 +135,7 @@ namespace Pikachu
             if (CheckValidPair(m_startObject, m_endObject))
             {                
                 HidePair(m_startObject, m_endObject);
-                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.type);
+                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.Type);
             }
 
             // Turn off choosen mode
@@ -149,7 +154,7 @@ namespace Pikachu
         }        
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {
-            if (button1.type != button2.type) return false;
+            if (button1.Type != button2.Type) return false;
             button1.m_IsObstacle = false; button2.m_IsObstacle = false;
 
             // if two pair are on a same column or same row

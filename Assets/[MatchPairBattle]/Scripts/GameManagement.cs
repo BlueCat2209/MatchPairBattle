@@ -52,11 +52,11 @@ public class GameManagement : MonoBehaviour
     [SerializeField] Image m_earthElement;
     [SerializeField] Button m_earthSkill;
 
-    public enum Result { VICTORY, DEFEATED, DRAW}
+    public enum Result { VICTORY, DEFEATED, DRAW }
     public static GameManagement Instance => m_instance;
-    private static GameManagement m_instance;
-    private bool m_isBeingStealed = false; 
-    private float m_currentTime;
+    public int FinalPoint => (m_playerTable.ButtonAmount - m_playerTable.PairAmount * 2) + (int)(m_targetTime - m_currentTime);
+    private static GameManagement m_instance;    
+    private float m_currentTime;    
 
     private void OnEnable() => PhotonNetwork.NetworkingClient.EventReceived += OnEventReceive;
     private void OnDisable() => PhotonNetwork.NetworkingClient.EventReceived -= OnEventReceive;
@@ -140,8 +140,8 @@ public class GameManagement : MonoBehaviour
         AnimalButton.AnimalType type = (AnimalButton.AnimalType)((byte)data[2]);
         
         // Process data
-        AnimalButton start = m_opponentTable.m_table[(int)startCor.x, (int)startCor.y];
-        AnimalButton end = m_opponentTable.m_table[(int)endCor.x, (int)endCor.y];
+        AnimalButton start = m_opponentTable.Table[(int)startCor.x, (int)startCor.y];
+        AnimalButton end = m_opponentTable.Table[(int)endCor.x, (int)endCor.y];
         m_opponentTable.HidePair(start, end);
         if (m_opponentTable.IsTableEmpty)
         {
@@ -175,8 +175,8 @@ public class GameManagement : MonoBehaviour
     public void SendPlayerTableData()
     {
         // Prepare table size
-        int row = (int)m_playerTable.m_tableSize.x;
-        int column = (int)m_playerTable.m_tableSize.y;
+        int row = (int)m_playerTable.TableSize.x;
+        int column = (int)m_playerTable.TableSize.y;
         Vector2 tableSize = new Vector2(row, column);
             
         // Prepare table data
@@ -186,7 +186,7 @@ public class GameManagement : MonoBehaviour
             byte[] tmp = new byte[column];
             for (int j = 0; j < column; j++)
             {
-                tmp[j] = (byte)m_playerTable.m_table[i, j].type;
+                tmp[j] = (byte)m_playerTable.Table[i, j].Type;
             }
             tableCode.Add(tmp);            
         }
