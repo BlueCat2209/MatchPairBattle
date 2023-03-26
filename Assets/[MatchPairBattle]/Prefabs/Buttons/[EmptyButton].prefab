@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5920779444162403670}
   - component: {fileID: 5920779444162403665}
   m_Layer: 5
-  m_Name: WaterDuck
+  m_Name: '[EmptyButton]'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e53edba2a2206041a70d03c17e043d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 1
+  m_type: 0
   m_RectTransform: {fileID: 5920779444162403664}
   m_Image: {fileID: 5920779444162403670}
   m_IsObstacle: 0
@@ -80,14 +80,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: cf747d49ff2b7b5469b53d35ab1c1138, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -136,7 +136,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 5920779444162403670}
   m_OnClick:
     m_PersistentCalls:

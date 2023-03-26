@@ -1,22 +1,31 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace Pikachu
 {
     public class PikachuTable : MonoBehaviour
     {
         [Header("Matrix Properties")]        
-        [SerializeField] AnimalButton[] m_buttonTypeList;        
-        public Vector2 m_tableSize;           
-        public AnimalButton[,] m_table;                
+        [SerializeField] AnimalButton[] m_buttonTypeList;
+        [SerializeField] Vector2 m_tableSize;
+        private AnimalButton[,] m_table;
+
+        public AnimalButton[,] Table => m_table;
+        public Vector2 TableSize => m_tableSize;
+        public int ButtonAmount => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
 
         [Header("Additional Properties")]                      
         [SerializeField] AudioSource m_clickAudio;
 
-        private AnimalButton m_startObject;
-        private AnimalButton m_endObject;
+        public int PairAmount => m_pairAmount;
+        public bool IsTableEmpty => (m_pairAmount <= 0) ? true : false;        
+        
         private int m_pairAmount;
-        private const float m_buttonSize = 75f;  
+        private const float m_buttonSize = 75f;
+        private AnimalButton m_startObject;
+        private AnimalButton m_endObject;        
+        private List<AnimalButton> m_buttonList = new List<AnimalButton>();
         
         private struct Point
         {
@@ -34,36 +43,48 @@ namespace Pikachu
         public void CreatePlayerTable()
         {
             int row = (int) m_tableSize.x;
-            int column = (int) m_tableSize.y;            
-            int buttonAmount = ((row * column) / 2);
+            int column = (int)m_tableSize.y;
 
-            m_pairAmount = (int)((m_tableSize.x * m_tableSize.y / 2));
             m_table = new AnimalButton[row, column];
+            m_pairAmount = ((row - 2) * (column - 2)) / 2;
 
             // Create normal button
-            for (int i = 0; i < buttonAmount; i++)
+            for (int i = 0; i < m_pairAmount; i++)
             {
                 // Create random button type
-                int random = Random.Range(0, m_buttonTypeList.Length);
+                int random = Random.Range(1, m_buttonTypeList.Length);
 
                 // Get random button location in table
-                int x1 = 0, y1 = 0;
+                int x1 = 1, y1 = 1;
                 while (m_table[x1, y1] != null)
                 {
-                    x1 = Random.Range(0, row);
-                    y1 = Random.Range(0, column);
+                    x1 = Random.Range(1, row - 1);
+                    y1 = Random.Range(1, column - 1);
                 }
                 m_table[x1, y1] = Instantiate(m_buttonTypeList[random], this.transform);
                 m_table[x1, y1].transform.SetParent(this.transform, false);
 
-                int x2 = 0, y2 = 0;
+                int x2 = 1, y2 = 1;
                 while (m_table[x2, y2] != null)
                 {
-                    x2 = Random.Range(0, row);
-                    y2 = Random.Range(0, column);
+                    x2 = Random.Range(1, row - 1);
+                    y2 = Random.Range(1, column - 1);
                 }
                 m_table[x2, y2] = Instantiate(m_buttonTypeList[random], this.transform);
                 m_table[x2, y2].transform.SetParent(this.transform, false);
+            }
+
+            // Create emtpy button
+            for (int i = 0; i < row; i++)
+            {
+                for (int j = 0; j < column; j++)
+                {
+                    if ((i == 0) || (i == row - 1) || (j == 0) || (j == column - 1))
+                    {
+                        m_table[i, j] = Instantiate(m_buttonTypeList[0], this.transform);
+                        m_table[i, j].transform.SetParent(transform, false);                        
+                    }
+                }
             }
 
             // Set position
@@ -71,27 +92,31 @@ namespace Pikachu
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
-                {
+                {                   
                     // Set position and location of button
-                    m_table[i, j].m_RectTransform.localPosition = new Vector3(columnStart + j * m_buttonSize, rowStart + i * m_buttonSize, 0);
+                    m_table[i, j].m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize,  0);
                     m_table[i, j].x = i; m_table[i, j].y = j;
+                    m_buttonList.Add(m_table[i, j]);
                 }
             }
             GameManagement.Instance.SendPlayerTableData();
         }                
         public void CreateTable(byte[,] buttonCode, Vector2 tableSize)
         {
-            // Set position
-            float rowStart = -((m_tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
+            // Set position & table size
+            m_tableSize = tableSize;
+            float rowStart = -((tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
             // Create table
             m_table = new AnimalButton[(int)tableSize.x, (int)tableSize.y];
+            m_pairAmount = (int)((tableSize.x - 2) * (tableSize.y - 2) / 2);
+
             for (int i = 0; i < tableSize.x; i++)
             {
                 for (int j = 0; j < tableSize.y; j++)
                 {
                     // Create button
                     var button = Instantiate(m_buttonTypeList[buttonCode[i, j]], this.transform);
-                    button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(columnStart + j * m_buttonSize, rowStart + i * m_buttonSize, 0);
+                    button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize, 0);
                     m_table[i, j] = button;
                     m_table[i, j].x = i;
                     m_table[i, j].y = j;
@@ -123,10 +148,9 @@ namespace Pikachu
             }
 
             if (CheckValidPair(m_startObject, m_endObject))
-            {
-                m_pairAmount--;
+            {                
                 HidePair(m_startObject, m_endObject);
-                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.type);
+                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.Type);
             }
 
             // Turn off choosen mode
@@ -139,13 +163,13 @@ namespace Pikachu
         }
         public void HidePair(AnimalButton start, AnimalButton end)
         {
+            m_pairAmount--;
             start.OnHideButton();
             end.OnHideButton();            
-        }
-        public bool CheckTableEmpty() => (m_pairAmount == 0) ? true : false;
+        }        
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {
-            if (button1.type != button2.type) return false;
+            if (button1.Type != button2.Type) return false;
             button1.m_IsObstacle = false; button2.m_IsObstacle = false;
 
             // if two pair are on a same column or same row
@@ -182,45 +206,37 @@ namespace Pikachu
         // Check pair on a same line or same column
         private bool CheckOnRowX(int y1, int y2, int x)
         {
-            if (x == 0 || x == m_tableSize.x - 1) return true;
-            else
-            {
-                int start = Mathf.Min(y1, y2);
-                int end = Mathf.Max(y1, y2);
+            int start = Mathf.Min(y1, y2);
+            int end = Mathf.Max(y1, y2);
 
-                for (int y = start; y <= end; y++)
+            for (int y = start; y <= end; y++)
+            {
+                // Has object between y1 and y2 on the line x
+                if (m_table[x, y].m_IsObstacle)
                 {
-                    // Has object between y1 and y2 on the line x
-                    if (m_table[x, y].m_IsObstacle)
-                    {
-                        Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
-                        return false;
-                    }
+                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    return false;
                 }
-                Debug.Log("Check on row X");
-                return true;
             }
+            Debug.Log("Check on row X");
+            return true;            
         }
         private bool CheckOnColumnY(int x1, int x2, int y)
         {
-            if (y == 0 || y == m_tableSize.y - 1) return true;
-            else
-            {
-                int start = Mathf.Min(x1, x2);
-                int end = Mathf.Max(x1, x2);
+            int start = Mathf.Min(x1, x2);
+            int end = Mathf.Max(x1, x2);
 
-                for (int x = start; x <= end; x++)
+            for (int x = start; x <= end; x++)
+            {
+                // Has object between y1 and y2 on the line x
+                if (m_table[x, y].m_IsObstacle)
                 {
-                    // Has object between y1 and y2 on the line x
-                    if (m_table[x, y].m_IsObstacle)
-                    {
-                        Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
-                        return false;
-                    }
+                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    return false;
                 }
-                Debug.Log("Check on column Y");
-                return true;
             }
+            Debug.Log("Check on column Y");
+            return true;            
         }
 
         // Check pair in a rectangle

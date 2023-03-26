@@ -7,12 +7,19 @@ namespace Pikachu
 {
     public class AnimalButton : MonoBehaviour
     {
+        [SerializeField] AnimalType m_type;
         private PikachuTable m_PikachuTable;
+
         public enum AnimalType 
-        { 
-            Fire, Ice, Wood, Earth, Air            
-        }        
-        public AnimalType type;
+        {
+            None = 0,
+            Fire = 1, 
+            Ice  = 2, 
+            Wood = 3, 
+            Earth= 4, 
+            Air  = 5 
+        }                
+        public AnimalType Type => m_type;
 
         public RectTransform m_RectTransform;
         public Image m_Image;
@@ -23,8 +30,7 @@ namespace Pikachu
 
         // Start is called before the first frame update
         void Start()
-        {
-            m_IsObstacle = true;            
+        {            
             m_RectTransform = GetComponent<RectTransform>();
             m_PikachuTable = GetComponentInParent<PikachuTable>();
         }
@@ -36,7 +42,7 @@ namespace Pikachu
         public void OnHideButton()
         {
             m_IsObstacle = false;
-            m_Image.enabled = false;
+            m_Image.enabled = false;            
             this.gameObject.SetActive(false);
             this.GetComponent<Button>().interactable = false;            
         }

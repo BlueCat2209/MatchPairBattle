@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5920779444162403670}
   - component: {fileID: 5920779444162403665}
   m_Layer: 5
-  m_Name: EarthPanda
+  m_Name: IceDuck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -53,7 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e53edba2a2206041a70d03c17e043d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_type: 4
+  m_type: 2
   m_RectTransform: {fileID: 5920779444162403664}
   m_Image: {fileID: 5920779444162403670}
   m_IsObstacle: 1
@@ -87,7 +87,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 6e483def67f2ba84f9b23aff38348638, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cf747d49ff2b7b5469b53d35ab1c1138, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
