@@ -52,7 +52,7 @@ namespace Pikachu
             for (int i = 0; i < m_pairAmount; i++)
             {
                 // Create random button type
-                int random = Random.Range(0, m_buttonTypeList.Length);
+                int random = Random.Range(1, m_buttonTypeList.Length);
 
                 // Get random button location in table
                 int x1 = 1, y1 = 1;
@@ -82,8 +82,7 @@ namespace Pikachu
                     if ((i == 0) || (i == row - 1) || (j == 0) || (j == column - 1))
                     {
                         m_table[i, j] = Instantiate(m_buttonTypeList[0], this.transform);
-                        m_table[i, j].transform.SetParent(transform, false);
-                        m_table[i, j].OnHideButton();                        
+                        m_table[i, j].transform.SetParent(transform, false);                        
                     }
                 }
             }
@@ -104,11 +103,12 @@ namespace Pikachu
         }                
         public void CreateTable(byte[,] buttonCode, Vector2 tableSize)
         {
-            // Set position
-            float rowStart = -((m_tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
+            // Set position & table size
+            m_tableSize = tableSize;
+            float rowStart = -((tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
             // Create table
             m_table = new AnimalButton[(int)tableSize.x, (int)tableSize.y];
-            m_pairAmount = (int)((m_tableSize.x * m_tableSize.y / 2));
+            m_pairAmount = (int)((tableSize.x - 2) * (tableSize.y - 2) / 2);
 
             for (int i = 0; i < tableSize.x; i++)
             {
@@ -116,7 +116,7 @@ namespace Pikachu
                 {
                     // Create button
                     var button = Instantiate(m_buttonTypeList[buttonCode[i, j]], this.transform);
-                    button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(columnStart + j * m_buttonSize, rowStart + i * m_buttonSize, 0);
+                    button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize, 0);
                     m_table[i, j] = button;
                     m_table[i, j].x = i;
                     m_table[i, j].y = j;
