@@ -1838,7 +1838,7 @@ MonoBehaviour:
   - {fileID: 4645621206805607640, guid: fd347c8eac8c6a74b81e7256e4ea818b, type: 3}
   - {fileID: 4645621206805607640, guid: 2cb151e1ffebd4949b8419ccf9796d78, type: 3}
   - {fileID: 4645621206805607640, guid: 7ebf7d6bb30ed51408d4dd657b8e920a, type: 3}
-  m_tableSize: {x: 10, y: 10}
+  m_tableSize: {x: 12, y: 12}
   m_clickAudio: {fileID: 519420033}
 --- !u!1 &1726296553
 GameObject:
@@ -2216,7 +2216,7 @@ MonoBehaviour:
   - {fileID: 4645621206805607640, guid: fd347c8eac8c6a74b81e7256e4ea818b, type: 3}
   - {fileID: 4645621206805607640, guid: 2cb151e1ffebd4949b8419ccf9796d78, type: 3}
   - {fileID: 4645621206805607640, guid: 7ebf7d6bb30ed51408d4dd657b8e920a, type: 3}
-  m_tableSize: {x: 10, y: 10}
+  m_tableSize: {x: 12, y: 12}
   m_clickAudio: {fileID: 519420033}
 --- !u!1 &1867219369
 GameObject:
