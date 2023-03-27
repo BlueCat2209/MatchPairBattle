@@ -36,18 +36,23 @@ public class GameManagement : MonoBehaviour
 
     [Header("ELEMENTS PROPERTIES")]
     [SerializeField] int m_stackAmount;
+    
     [Header("Ice")]
     [SerializeField] Image m_iceElement;
     [SerializeField] Button m_iceSkill;
+    
     [Header("Air")]
     [SerializeField] Image m_airElement;
     [SerializeField] Button m_airSkill;
+    
     [Header("Wood")]
     [SerializeField] Image m_woodElement;
     [SerializeField] Button m_woodSkill;
+    
     [Header("Fire")]
     [SerializeField] Image m_fireElement;
     [SerializeField] Button m_fireSkill;
+
     [Header("Earth")]
     [SerializeField] Image m_earthElement;
     [SerializeField] Button m_earthSkill;
