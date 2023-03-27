@@ -251,6 +251,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: SendPlayerSkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &107268919
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -870,6 +882,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: SendPlayerSkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 3
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &805949505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -976,16 +1000,17 @@ MonoBehaviour:
   m_textScore: {fileID: 1867219372}
   m_textResult: {fileID: 1137515943}
   m_stackAmount: 4
-  m_iceElement: {fileID: 954959520}
-  m_iceSkill: {fileID: 1640348257}
-  m_airElement: {fileID: 1155239688}
-  m_airSkill: {fileID: 1726296555}
-  m_woodElement: {fileID: 2142030941}
-  m_woodSkill: {fileID: 805949504}
   m_fireElement: {fileID: 2014473258}
   m_fireSkill: {fileID: 107268918}
+  m_iceElement: {fileID: 954959520}
+  m_iceSkill: {fileID: 1640348257}
+  m_iceFreezePrefab: {fileID: 7928292848890071974, guid: 243787eb3cc84e649a70b77dd7389dee, type: 3}
+  m_woodElement: {fileID: 2142030941}
+  m_woodSkill: {fileID: 805949504}
   m_earthElement: {fileID: 1601892877}
   m_earthSkill: {fileID: 1729616898}
+  m_airElement: {fileID: 1155239688}
+  m_airSkill: {fileID: 1726296555}
 --- !u!4 &872467413
 Transform:
   m_ObjectHideFlags: 0
@@ -1656,6 +1681,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: SendPlayerSkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1640348258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1937,6 +1974,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: SendPlayerSkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 5
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1726296556
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2067,6 +2116,18 @@ MonoBehaviour:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 872467412}
+        m_TargetAssemblyTypeName: GameManagement, Assembly-CSharp
+        m_MethodName: SendPlayerSkill
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 4
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
