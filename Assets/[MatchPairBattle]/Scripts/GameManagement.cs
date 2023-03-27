@@ -11,6 +11,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
 using TMPro;
+using ElementSkill;
 
 public class GameManagement : MonoBehaviour
 {
@@ -36,21 +37,27 @@ public class GameManagement : MonoBehaviour
 
     [Header("ELEMENTS PROPERTIES")]
     [SerializeField] int m_stackAmount;
-    [Header("Ice")]
-    [SerializeField] Image m_iceElement;
-    [SerializeField] Button m_iceSkill;
-    [Header("Air")]
-    [SerializeField] Image m_airElement;
-    [SerializeField] Button m_airSkill;
-    [Header("Wood")]
-    [SerializeField] Image m_woodElement;
-    [SerializeField] Button m_woodSkill;
+
     [Header("Fire")]
     [SerializeField] Image m_fireElement;
     [SerializeField] Button m_fireSkill;
+
+    [Header("Ice")]
+    [SerializeField] Image m_iceElement;
+    [SerializeField] Button m_iceSkill;
+    [SerializeField] GameObject m_iceFreezePrefab;
+
+    [Header("Wood")]
+    [SerializeField] Image m_woodElement;
+    [SerializeField] Button m_woodSkill;
+
     [Header("Earth")]
     [SerializeField] Image m_earthElement;
     [SerializeField] Button m_earthSkill;
+
+    [Header("Air")]
+    [SerializeField] Image m_airElement;
+    [SerializeField] Button m_airSkill;
 
     public enum Result { VICTORY, DEFEATED, DRAW }
     public static GameManagement Instance => m_instance;
@@ -110,6 +117,9 @@ public class GameManagement : MonoBehaviour
             case PhotonEventCode.TransferPairData:
                 SetOpponentPairData(data);
                 break;
+            case PhotonEventCode.TransferSkill:
+                SetOppoentSkill(data);
+                break;
         }
     }
     protected virtual void SetOpponentTableData(object[] data)
@@ -148,7 +158,48 @@ public class GameManagement : MonoBehaviour
             SetGameFinish(Result.DEFEATED);
         }
     }
-    
+    protected virtual void SetOppoentSkill(object[] data)
+    {
+        // Extract data
+        byte skillCode = (byte)data[0];
+
+        // Process data
+        switch ((SkillType)skillCode)
+        {
+            case SkillType.Fire:
+                HitFireSkill();
+                break;
+            case SkillType.Ice:
+                HitIceSkill();
+                break;
+            case SkillType.Wood:
+                HitWoodSkill();
+                break;
+            case SkillType.Earth:
+                HitEarthSkill();
+                break;
+            case SkillType.Air:
+                HitAirSkill();
+                break;
+        }
+    }
+
+    public void SendPlayerSkill(int skillCode)
+    {
+        // Package data
+        object[] dataSend = new object[] { (byte)skillCode };
+
+        // Select other client to receive this data
+        RaiseEventOptions targetOption = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+
+        // Transfer data
+        PhotonNetwork.RaiseEvent(
+            (byte)PhotonEventCode.TransferSkill,
+            dataSend,
+            targetOption,
+            SendOptions.SendUnreliable
+            );
+    }
     public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalButton.AnimalType type)
     {
         if (m_playerTable.IsTableEmpty) SetGameFinish(Result.VICTORY);
@@ -268,7 +319,7 @@ public class GameManagement : MonoBehaviour
         }
     }
 
-    #region Special Skills
+    #region Cast Skills
     public void CastFireSkill()
     {
         m_fireElement.fillAmount = 0;
@@ -278,6 +329,9 @@ public class GameManagement : MonoBehaviour
     {
         m_iceElement.fillAmount = 0;
         m_iceSkill.interactable = false;
+
+        var skill = Instantiate(m_iceFreezePrefab, m_opponentTable.transform);
+        skill.GetComponent<Ice>().StartSkill();
     }
     public void CastWoodSkill()
     {
@@ -296,7 +350,27 @@ public class GameManagement : MonoBehaviour
     }
     #endregion
 
-    #region Coroutine
+    #region Hit Skills
+    public void HitFireSkill()
+    {
 
+    }
+    public void HitIceSkill()
+    {
+        var skill = Instantiate(m_iceFreezePrefab, m_playerTable.transform);
+        skill.GetComponent<Ice>().StartSkill();
+    }
+    public void HitWoodSkill()
+    {
+
+    }
+    public void HitEarthSkill()
+    {
+    
+    }
+    public void HitAirSkill()
+    {
+    
+    }
     #endregion               
 }

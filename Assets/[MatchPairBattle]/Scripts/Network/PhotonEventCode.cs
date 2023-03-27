@@ -10,5 +10,6 @@ namespace Network
         // Pikachu Event
         TransferTableData = 3,
         TransferPairData = 4,
+        TransferSkill = 5,
     }
 }
