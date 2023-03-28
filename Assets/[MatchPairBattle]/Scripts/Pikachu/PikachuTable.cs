@@ -208,7 +208,7 @@ namespace Pikachu
         #region Pikachu Algorithm
 
         // Check pair on a same line or same column
-        private bool CheckOnRowX(int y1, int y2, int x)
+        private bool CheckOnColumnX(int y1, int y2, int x)
         {
             int start = Mathf.Min(y1, y2);
             int end = Mathf.Max(y1, y2);
@@ -225,7 +225,7 @@ namespace Pikachu
             Debug.Log("Check on row X");
             return true;            
         }
-        private bool CheckOnColumnY(int x1, int x2, int y)
+        private bool CheckOnRowY(int x1, int x2, int y)
         {
             int start = Mathf.Min(x1, x2);
             int end = Mathf.Max(x1, x2);
