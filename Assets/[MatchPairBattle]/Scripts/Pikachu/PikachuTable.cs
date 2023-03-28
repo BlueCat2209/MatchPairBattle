@@ -31,6 +31,10 @@ namespace Pikachu
         {
             public int x;
             public int y;
+            public string ToString()
+            {
+                return "{" + x + ";" + y + "}";
+            }
             public Point(int x, int y)
             {
                 this.x = x;
@@ -175,12 +179,12 @@ namespace Pikachu
             // if two pair are on a same column or same row
             if (button1.x == button2.x)
             {
-                if(CheckOnRowX(button1.y, button2.y, button1.x))
+                if(CheckOnColumnX(button1.y, button2.y, button1.x))
                   return true;
             }
             if (button1.y == button2.y)
             {
-                if (CheckOnColumnY(button1.x, button2.x, button1.y))
+                if (CheckOnRowY(button1.x, button2.x, button1.y))
                 return true;
             }
 
@@ -204,7 +208,7 @@ namespace Pikachu
         #region Pikachu Algorithm
 
         // Check pair on a same line or same column
-        private bool CheckOnRowX(int y1, int y2, int x)
+        private bool CheckOnColumnX(int y1, int y2, int x)
         {
             int start = Mathf.Min(y1, y2);
             int end = Mathf.Max(y1, y2);
@@ -214,14 +218,14 @@ namespace Pikachu
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log("[Pikachu Algorithm][CheckOnColumnX] " + y1 + " ->" + y2 + " on column " + x + " is BLOCK!");
                     return false;
                 }
             }
-            Debug.Log("Check on row X");
+            Debug.Log("[Pikachu Algorithm][CheckOnColumnX] " + y1 + " ->" + y2 + " on column " + x + " is CLEAR!");
             return true;            
         }
-        private bool CheckOnColumnY(int x1, int x2, int y)
+        private bool CheckOnRowY(int x1, int x2, int y)
         {
             int start = Mathf.Min(x1, x2);
             int end = Mathf.Max(x1, x2);
@@ -231,11 +235,11 @@ namespace Pikachu
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log("[Pikachu Algorithm][CheckOnRowY] " + x1 + " ->" + x2 + " on row " + y + " is BLOCK!");
                     return false;
                 }
             }
-            Debug.Log("Check on column Y");
+            Debug.Log("[Pikachu Algorithm][CheckOnRowY] " + x1 + " ->" + x2 + " on row " + y + " is CLEAR!");
             return true;            
         }
 
@@ -250,23 +254,24 @@ namespace Pikachu
                                     _______<3>_______ end         
             */
             Point startPoint = point1; Point endPoint = point2;
-            if (point1.y > point2.y) // The bigger of  y-index, the lower of point's position
+            if (point1.x > point2.x) // Must be started from the lower column index on Horizontal (because of the FOR loop)
             {
                 startPoint = point2;
                 endPoint = point1;
             }
-            Debug.Log("Check on rect horizontal");
-            for (int y = startPoint.y; y <= endPoint.y; y++)
+            for (int x = startPoint.x; x <= endPoint.x; x++)
             {
                 // if line <1>, <2> and <3> are exist then this Rect is  exist too
                     // if there is no line on row x then return false;
-                if (!CheckOnRowX(startPoint.y, y, startPoint.x)) return false;
+                if (!CheckOnRowY(startPoint.x, x, startPoint.y)) return false;
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
                 else 
                 {
-                    Debug.Log("Kiem tra cot y");
-                    if (CheckOnColumnY(startPoint.x, endPoint.x, y) && CheckOnRowX(y, endPoint.y, endPoint.x))
+                    if (CheckOnColumnX(startPoint.y, endPoint.y, x) && CheckOnRowY(x, endPoint.x, endPoint.y))
+                    {
+                        Debug.Log("[Pikachu Algorithm][CheckOnRectHorizontal] " + startPoint.ToString() + " -> Column " + x + " -> " + endPoint.ToString());
                         return true;
+                    }                    
                 }                
             }            
             return false;
@@ -285,25 +290,25 @@ namespace Pikachu
                                  end
             */
             Point startPoint = point1; Point endPoint = point2;
-            if (point1.x > point2.x)
+            if (point1.y > point2.y) // Must be started from the lower row index on Vertical (because of the FOR loop)
             {
                 startPoint = point2;
                 endPoint = point1;
-            }
-            Debug.Log("Check bug rectvertical");
-            for (int x = startPoint.x; x <= endPoint.x; x++)
+            }            
+            for (int y = startPoint.y; y <= endPoint.y; y++)
             {
                 // if line <1>, <2> and <3> are exist then this Rect is  exist too
 
                     // if there is no line on row x then return false;
-                if (!CheckOnColumnY(startPoint.x, x, startPoint.y)) return false;
-                
+                if (!CheckOnColumnX(startPoint.y, y, startPoint.x)) return false;                
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
                 else 
                 {
-                    Debug.Log("Kiem tra cot x");
-                    if (CheckOnRowX(startPoint.y, endPoint.y, x) && CheckOnColumnY(x, endPoint.x, endPoint.y))
+                    if (CheckOnRowY(startPoint.x, endPoint.x, y) && CheckOnColumnX(y, endPoint.y, endPoint.x))
+                    {
+                        Debug.Log("[Pikachu Algorithm][CheckOnRectVertical] " + startPoint.ToString() + " -> Row " + y + " -> " + endPoint.ToString());
                         return true;
+                    }                        
                 }
             }
             return false;
@@ -312,37 +317,47 @@ namespace Pikachu
         // Expandation Check
         private bool CheckOnHorizontalExpand(Point point1, Point point2, int direction)
         {
-            /*
-             start_______________<1>_______________
+            /* 
+             * Sample for direction = 1
+             start_______________<1>_______________<a>
                                                    |
                                                   <2>
-                                    end____<3>_____|
-
+                                                   |
+                                    end____<3>_____<b>            
+            
+            * Sample for direction = -1
+             <a>_____<1>____start
+              |
+             <2>
+              |
+             <b>_____________<3>_____________end
 
             */
             Point startPoint = point1; Point endPoint = point2;
-            if (point1.y > point2.y)
+            if (point1.x > point2.x) // Must be started from the lower column index on Horizontal (because we have to check the line <1> is exist or not)
             {
                 startPoint = point2;
                 endPoint = point1;
             }
 
-            int column = endPoint.y; int row = startPoint.x;
-            if (direction < 0)
+            int column = endPoint.x;  // The first column (which stands for line <2>) must start from the same column with endPoint
+            int row = startPoint.y; // The most important row to check must be the same with the row of startPoint
+            if (direction < 0) // If we moving BACKWARD (reducing-type)
             {
-                column = startPoint.y;
-                row = endPoint.x;
+                column = startPoint.x; // The first column (which stands for line <2>) must start from the same column with startPoint
+                row = endPoint.y; // the most important row to check must be the same with the row of endPoint
             }
             
-            if (CheckOnRowX(startPoint.y, endPoint.y, row)) // if line <1> exist
+            if (CheckOnRowY(startPoint.x, endPoint.x, row)) // if line <1> exist
             {
-                
-                while (!m_table[startPoint.x, column].m_IsObstacle && !m_table[endPoint.x, column].m_IsObstacle)
+                // while <a> and <b> is not obstacles
+                // while we are moving the column from end.x to further, we also guarantee that the line <3> is exist
+                while (!m_table[column, startPoint.y].m_IsObstacle && !m_table[column, endPoint.y].m_IsObstacle)
                 {
-                    
-                    if (CheckOnColumnY(startPoint.x, endPoint.x, column))
+                    // Check if line <2> exist
+                    if (CheckOnColumnX(startPoint.y, endPoint.y, column))
                     {
-                        Debug.Log("Check on horizontal expand");
+                        Debug.Log("[Pikachu Algorithm][CheckOnHorizontalExpand] " + startPoint.ToString() + " -> Row " + column + " -> " + endPoint.ToString());
                         return true;
                     }
 
@@ -354,29 +369,51 @@ namespace Pikachu
         }
         private bool CheckOnVerticalExpand(Point point1, Point point2, int direction)
         {
-            Point startPoint = point1; Point endPoint = point2;
+            /*
+             * Sample for direction = 1
+               ______<2>_____
+               |             |
+               |             |
+              <1>           <3>
+               |             |
+               |             |
+             start          end
 
-            if (point1.x > point2.x)
+             * Sample for direction = -1
+             start          end
+               |             |
+               |             |
+              <1>           <3>
+               |             |
+               |             |
+              <a>____<2>____<b>
+                            
+            */
+            Point startPoint = point1; Point endPoint = point2;
+            if (point1.y > point2.y) // Must be started from the lower row index on Vertical (because we have to check the line <1> is exist or not)
             {
                 startPoint = point2;
                 endPoint = point1;
             }
 
-            int row = endPoint.x; int column = startPoint.y;
-            if (direction < 0)
+            int row = endPoint.y; // The first row (which stands for line <2>) must start from the same row with endPoint
+            int column = startPoint.x; // the most important column to check must be the same with the column of startPoint
+            if (direction < 0) // If we are moving BACKWARD (reducing-type)
             {
-                row = startPoint.x;
-                column = endPoint.y;
+                row = startPoint.y; // the first row (which stand for line <2>) must start from the same row with startPoint
+                column = endPoint.x; // the most important column to check must be the same with the column of endPoint
             }
 
-            if (CheckOnColumnY(startPoint.x, endPoint.x, column))
+            if (CheckOnColumnX(startPoint.y, endPoint.y, column)) // if line <1> exist
             {
-                Debug.Log("Check bug vertical");
-                while (!m_table[row, startPoint.y].m_IsObstacle && !m_table[row, endPoint.y].m_IsObstacle)
+                // while <a> and <b> is not obstacles
+                // while we are moving the column from end.x to further, we also guarantee that the line <3> is exist
+                while (!m_table[startPoint.x, row].m_IsObstacle && !m_table[endPoint.x, row].m_IsObstacle)
                 {
-                    if (CheckOnRowX(startPoint.y, endPoint.y, row))
+                    // Check if line <2> exist
+                    if (CheckOnRowY(startPoint.x, endPoint.x, row))
                     {
-                        Debug.Log("Check on vertical expand");
+                        Debug.Log("[Pikachu Algorithm][CheckOnVerticalExpand] " + startPoint.ToString() + " -> Row " + row + " -> " + endPoint.ToString());
                         return true;
                     }
 
