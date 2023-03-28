@@ -179,12 +179,12 @@ namespace Pikachu
             // if two pair are on a same column or same row
             if (button1.x == button2.x)
             {
-                if(CheckOnRowX(button1.y, button2.y, button1.x))
+                if(CheckOnColumnX(button1.y, button2.y, button1.x))
                   return true;
             }
             if (button1.y == button2.y)
             {
-                if (CheckOnColumnY(button1.x, button2.x, button1.y))
+                if (CheckOnRowY(button1.x, button2.x, button1.y))
                 return true;
             }
 
