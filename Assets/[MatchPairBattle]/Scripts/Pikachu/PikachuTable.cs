@@ -31,6 +31,10 @@ namespace Pikachu
         {
             public int x;
             public int y;
+            public string ToString()
+            {
+                return "{" + x + ";" + y + "}";
+            }
             public Point(int x, int y)
             {
                 this.x = x;
