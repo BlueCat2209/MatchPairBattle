@@ -218,11 +218,11 @@ namespace Pikachu
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log("[Pikachu Algorithm][CheckOnColumnX] " + y1 + " ->" + y2 + " on column " + x + " is BLOCK!");
                     return false;
                 }
             }
-            Debug.Log("Check on row X");
+            Debug.Log("[Pikachu Algorithm][CheckOnColumnX] " + y1 + " ->" + y2 + " on column " + x + " is CLEAR!");
             return true;            
         }
         private bool CheckOnRowY(int x1, int x2, int y)
@@ -235,11 +235,11 @@ namespace Pikachu
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    Debug.Log("[Pikachu Algorithm][CheckOnRowY] " + x1 + " ->" + x2 + " on row " + y + " is BLOCK!");
                     return false;
                 }
             }
-            Debug.Log("Check on column Y");
+            Debug.Log("[Pikachu Algorithm][CheckOnRowY] " + x1 + " ->" + x2 + " on row " + y + " is CLEAR!");
             return true;            
         }
 
@@ -317,12 +317,20 @@ namespace Pikachu
         // Expandation Check
         private bool CheckOnHorizontalExpand(Point point1, Point point2, int direction)
         {
-            /*
-             start_______________<1>_______________
+            /* 
+             * Sample for direction = 1
+             start_______________<1>_______________<a>
                                                    |
                                                   <2>
-                                    end____<3>_____|
-
+                                                   |
+                                    end____<3>_____<b>            
+            
+            * Sample for direction = -1
+             <a>_____<1>____start
+              |
+             <2>
+              |
+             <b>_____________<3>_____________end
 
             */
             Point startPoint = point1; Point endPoint = point2;
@@ -349,7 +357,7 @@ namespace Pikachu
                     // Check if line <2> exist
                     if (CheckOnColumnX(startPoint.y, endPoint.y, column))
                     {
-                        Debug.Log("Check on horizontal expand");
+                        Debug.Log("[Pikachu Algorithm][CheckOnHorizontalExpand] " + startPoint.ToString() + " -> Row " + column + " -> " + endPoint.ToString());
                         return true;
                     }
 
@@ -361,6 +369,26 @@ namespace Pikachu
         }
         private bool CheckOnVerticalExpand(Point point1, Point point2, int direction)
         {
+            /*
+             * Sample for direction = 1
+               ______<2>_____
+               |             |
+               |             |
+              <1>           <3>
+               |             |
+               |             |
+             start          end
+
+             * Sample for direction = -1
+             start          end
+               |             |
+               |             |
+              <1>           <3>
+               |             |
+               |             |
+              <a>____<2>____<b>
+                            
+            */
             Point startPoint = point1; Point endPoint = point2;
             if (point1.y > point2.y) // Must be started from the lower row index on Vertical (because we have to check the line <1> is exist or not)
             {
@@ -385,7 +413,7 @@ namespace Pikachu
                     // Check if line <2> exist
                     if (CheckOnRowY(startPoint.x, endPoint.x, row))
                     {
-                        Debug.Log("Check on vertical expand");
+                        Debug.Log("[Pikachu Algorithm][CheckOnVerticalExpand] " + startPoint.ToString() + " -> Row " + row + " -> " + endPoint.ToString());
                         return true;
                     }
 
