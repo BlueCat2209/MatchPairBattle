@@ -1841,6 +1841,7 @@ MonoBehaviour:
   - {fileID: 4645621206805607640, guid: 7ebf7d6bb30ed51408d4dd657b8e920a, type: 3}
   m_tableSize: {x: 12, y: 12}
   m_clickAudio: {fileID: 519420033}
+  linePrefab: {fileID: 4488835140257479553, guid: b5d210389b7b059439af1edfd23b5b45, type: 3}
 --- !u!1 &1726296553
 GameObject:
   m_ObjectHideFlags: 0
@@ -2220,6 +2221,7 @@ MonoBehaviour:
   - {fileID: 4645621206805607640, guid: 7ebf7d6bb30ed51408d4dd657b8e920a, type: 3}
   m_tableSize: {x: 12, y: 12}
   m_clickAudio: {fileID: 519420033}
+  linePrefab: {fileID: 0}
 --- !u!1 &1867219369
 GameObject:
   m_ObjectHideFlags: 0

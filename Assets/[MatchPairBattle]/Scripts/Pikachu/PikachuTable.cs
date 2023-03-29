@@ -1,6 +1,5 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pikachu
 {
@@ -26,7 +25,10 @@ namespace Pikachu
         private AnimalButton m_startObject;
         private AnimalButton m_endObject;        
         private List<AnimalButton> m_buttonList = new List<AnimalButton>();
-        
+
+        //Draw Line Function
+        [SerializeField]
+        private  GameObject linePrefab;
         private struct Point
         {
             public int x;
@@ -150,7 +152,9 @@ namespace Pikachu
             if (CheckValidPair(m_startObject, m_endObject))
             {                
                 HidePair(m_startObject, m_endObject);
-                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.Type);
+
+                OnMatchedPair(m_startObject, m_endObject);
+                GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.Type);    
             }
 
             // Turn off choosen mode
@@ -166,7 +170,7 @@ namespace Pikachu
             m_pairAmount--;
             start.OnHideButton();
             end.OnHideButton();            
-        }        
+        }
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {
             if (button1.Type != button2.Type) return false;
@@ -175,26 +179,50 @@ namespace Pikachu
             // if two pair are on a same column or same row
             if (button1.x == button2.x)
             {
-                if(CheckOnRowX(button1.y, button2.y, button1.x))
-                  return true;
+                if (CheckOnRowX(button1.y, button2.y, button1.x))
+                {
+
+                    return true;
+                }
             }
             if (button1.y == button2.y)
             {
                 if (CheckOnColumnY(button1.x, button2.x, button1.y))
-                return true;
+                {
+
+                    return true;
+                }
             }
 
             // Check with Rectangle
-            if (CheckOnRectHorizontal(new Point(button1.x, button1.y), new Point(button2.x, button2.y))) return true;
-            if (CheckOnRectVertical(new Point(button1.x, button1.y), new Point(button2.x, button2.y))) return true;
-
+            if (CheckOnRectHorizontal(new Point(button1.x, button1.y), new Point(button2.x, button2.y)))
+            {
+                return true;
+            }
+            if (CheckOnRectVertical(new Point(button1.x, button1.y), new Point(button2.x, button2.y)))
+            {
+                return true;
+            }
             // Expandation Check
-                // Horizontal
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1)) return true;
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y),-1)) return true;
+            // Horizontal
+            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1))
+            {
+                return true;
+            }
+            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1))
+            {
+                return true;
+            }
             // Vertical
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1)) return true;
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y),-1)) return true;
+            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1))
+            {
+                return true;
+            }
+
+            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1))
+            {
+                return true;
+            }
 
             button1.m_IsObstacle = true; button2.m_IsObstacle = true;
             return false;
@@ -211,14 +239,13 @@ namespace Pikachu
 
             for (int y = start; y <= end; y++)
             {
+                Debug.Log("RowX check: "+x + "-"+y);
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
-                {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                {                  
                     return false;
                 }
             }
-            Debug.Log("Check on row X");
             return true;            
         }
         private bool CheckOnColumnY(int x1, int x2, int y)
@@ -228,14 +255,15 @@ namespace Pikachu
 
             for (int x = start; x <= end; x++)
             {
+                
                 // Has object between y1 and y2 on the line x
                 if (m_table[x, y].m_IsObstacle)
                 {
-                    Debug.Log(x + " " + y + " " + m_table[x, y].m_IsObstacle);
+                    
                     return false;
                 }
             }
-            Debug.Log("Check on column Y");
+
             return true;            
         }
 
@@ -243,19 +271,20 @@ namespace Pikachu
         private bool CheckOnRectHorizontal(Point point1, Point point2)
         {
             /* Start from upper-point to lower-point
-               start ______<1>______
-                                    |
-                                   <2>
-                                    |
-                                    _______<3>_______ end         
-            */
+           start ______<1>______
+                                |
+                               <2>
+                                |
+                                _______<3>_______ end         
+        */
+            
             Point startPoint = point1; Point endPoint = point2;
             if (point1.y > point2.y) // The bigger of  y-index, the lower of point's position
             {
                 startPoint = point2;
                 endPoint = point1;
             }
-            Debug.Log("Check on rect horizontal");
+
             for (int y = startPoint.y; y <= endPoint.y; y++)
             {
                 // if line <1>, <2> and <3> are exist then this Rect is  exist too
@@ -264,7 +293,7 @@ namespace Pikachu
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
                 else 
                 {
-                    Debug.Log("Kiem tra cot y");
+
                     if (CheckOnColumnY(startPoint.x, endPoint.x, y) && CheckOnRowX(y, endPoint.y, endPoint.x))
                         return true;
                 }                
@@ -274,23 +303,23 @@ namespace Pikachu
         private bool CheckOnRectVertical(Point point1, Point point2)
         {
             /* Start from left-point to right-point
-               start 
-                 |
-                <1>
-                 |
-                 _______<2>_______ 
-                                  |
-                                 <3>
-                                  |
-                                 end
-            */
+                  start 
+                    |
+                   <1>
+                    |
+                    _______<2>_______ 
+                                     |
+                                    <3>
+                                     |
+                                    end
+               */
+
             Point startPoint = point1; Point endPoint = point2;
             if (point1.x > point2.x)
             {
                 startPoint = point2;
                 endPoint = point1;
             }
-            Debug.Log("Check bug rectvertical");
             for (int x = startPoint.x; x <= endPoint.x; x++)
             {
                 // if line <1>, <2> and <3> are exist then this Rect is  exist too
@@ -301,9 +330,9 @@ namespace Pikachu
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
                 else 
                 {
-                    Debug.Log("Kiem tra cot x");
+
                     if (CheckOnRowX(startPoint.y, endPoint.y, x) && CheckOnColumnY(x, endPoint.x, endPoint.y))
-                        return true;
+                    return true;
                 }
             }
             return false;
@@ -342,7 +371,7 @@ namespace Pikachu
                     
                     if (CheckOnColumnY(startPoint.x, endPoint.x, column))
                     {
-                        Debug.Log("Check on horizontal expand");
+
                         return true;
                     }
 
@@ -371,22 +400,344 @@ namespace Pikachu
 
             if (CheckOnColumnY(startPoint.x, endPoint.x, column))
             {
-                Debug.Log("Check bug vertical");
                 while (!m_table[row, startPoint.y].m_IsObstacle && !m_table[row, endPoint.y].m_IsObstacle)
                 {
                     if (CheckOnRowX(startPoint.y, endPoint.y, row))
                     {
-                        Debug.Log("Check on vertical expand");
+
                         return true;
                     }
 
                     row += direction;
-                    if (row != Mathf.Clamp(row, 0, m_tableSize.x)) break;
+                    if (row != Mathf.Clamp(row, 0, m_tableSize.x))
+                    {
+                        break;
+                    } 
                 }
             }
             return false;
         }
 
+        #endregion
+
+        #region DrawLine
+
+        public void OnMatchedPair(AnimalButton button1, AnimalButton button2)
+        {
+
+            // Draw a line between the two matching pairs
+            Vector3 start, end, corner, corner2;
+            start = new Vector3(button1.transform.localPosition.x, button1.transform.localPosition.y, 0);
+            end = new Vector3(button2.transform.localPosition.x, button2.transform.localPosition.y, 0);
+
+            //Draw U shape Right-Left-Outside
+            if (button1.x == button2.x && button1.x == 1 || button1.x == button2.x && button1.x == 10)
+            {
+                switch (button1.x)
+                {
+                    case 1:
+                        corner = start - new Vector3(m_buttonSize, 0, 0);
+                        DrawLine(start, corner);
+                        DrawLine_L_Doc(corner, end, button1, button2);
+
+                        break;
+                    case 10:
+                        corner = start + new Vector3(m_buttonSize, 0, 0);
+                        DrawLine(start, corner);
+                        DrawLine_L_Doc(corner, end, button1, button2);
+                        break;
+                }
+            }
+            //Draw U shape Up-Down_Outside
+            if (button1.y == button2.y && button1.y == 1 || button1.y == button2.y && button1.y == 10)
+            {
+                switch (button1.y)
+                {
+                    case 1:
+                        corner = start - new Vector3(0, m_buttonSize, 0);
+                        DrawLine(start, corner);
+                        DrawLine_L_Ngang(corner, end, button1, button2);
+
+                        break;
+                    case 10:
+                        corner = start + new Vector3(0, m_buttonSize, 0);
+                        DrawLine(start, corner);
+                        DrawLine_L_Ngang(corner, end, button1, button2);
+                        break;
+                }
+            }
+
+            //Draw Straight Line
+            if (button1.x == button2.x && button1.x != 1 && button2.x != 10)
+            {
+                Debug.Log("3");
+                if (CheckOnRowX(button1.y, button2.y, button1.x))
+                {
+                    DrawLine(start, end);
+                    return;
+                }
+           
+            }
+            if (button1.y == button2.y && button1.y != 1 && button2.y != 10)
+            {
+                Debug.Log("4");
+                if (CheckOnColumnY(button1.x, button2.x, button1.y))
+                {
+                    DrawLine(start, end);
+                }
+                  
+            }
+
+            //Draw L line
+                if (!CheckOnColumnY(button1.x, button2.x, button1.y))
+                {
+                    var count = 0;
+                    //Check tu vi tri y di len tren
+                        Debug.Log("y1<y2");
+                        for (int y = button1.y + 1; y <= 11; y++)
+                        {
+                            count++;
+                            if (CheckOnColumnY(button1.x, button2.x, y))
+                            {
+                                corner = start + new Vector3(0, m_buttonSize * count, 0);
+                                Debug.Log("Corner1: " + corner);
+                                if (CheckOnRowX(button2.y,Get_Y_On_Vector(corner),button2.x))
+                                {
+                                    corner2 = end - new Vector3(0, m_buttonSize * (button2.y - Get_Y_On_Vector(corner)), 0);
+                                    if (CheckOnRowX(button1.y, Get_Y_On_Vector(corner), button1.x))
+                                    {
+                                      Debug.Log("Corner2: " + corner2);
+                                      DrawLine(start, corner);
+                                      DrawLine(corner, corner2);
+                                      DrawLine(corner2, end);
+                                      break;
+                                    }
+                            }    
+                                        
+                            }
+                        }
+                        count = 0;
+                        for (int y = button1.y - 1; y >= 0; y--)
+                        {
+                            count--;
+                            if (CheckOnColumnY(button1.x, button2.x, y))
+                            {
+                                corner = start + new Vector3(0, m_buttonSize * count, 0);
+                                Debug.Log("Corner1: " + corner);
+                                if (CheckOnRowX(button2.y, Get_Y_On_Vector(corner), button2.x))
+                                {
+                                    corner2 = end - new Vector3(0, m_buttonSize * (button2.y - Get_Y_On_Vector(corner)), 0);
+                                    if (CheckOnRowX(button1.y, Get_Y_On_Vector(corner), button1.x))
+                                    {
+                                    Debug.Log("Corner2: " + corner2);
+                                    DrawLine(start, corner);
+                                    DrawLine(corner, corner2);
+                                    DrawLine(corner2, end);
+                                    break;
+                                    }
+                                }
+                            }
+                        }
+                }
+                if (!CheckOnRowX(button1.y,button2.y,button1.x))
+                {
+                    var count = 0;
+                    for(int x=button1.x+1;x<=11;x++)
+                        {
+                            count++;
+                            if(CheckOnRowX(button1.y,button2.y,x))
+                            {
+                                corner = start + new Vector3(m_buttonSize* count, 0, 0);
+                                Debug.Log("Corner1: " + corner);
+                                if (CheckOnColumnY(button2.x,Get_X_On_Vector(corner),button2.y))
+                                {
+                                    corner2 = end - new Vector3(m_buttonSize * (button2.x - Get_X_On_Vector(corner)), 0, 0);
+                                    if (CheckOnColumnY(button1.x, Get_X_On_Vector(corner), button1.y))
+                                    {
+                                    Debug.Log("Corner2: " + corner2);
+                                    DrawLine(start, corner);
+                                    DrawLine(corner, corner2);
+                                    DrawLine(corner2, end);
+                                    break;
+                                    }
+                                }
+                            }    
+                                
+                        }
+                    count = 0;
+                    for(int x=button1.x-1;x>=0;x--)
+                        {
+                            count--;
+                            if (!CheckOnRowX(button1.y, button2.y, x))
+                            {
+                                corner = start + new Vector3(m_buttonSize * count, 0, 0);
+                                Debug.Log("Corner1: " + corner);
+                                if (CheckOnColumnY(button2.x, Get_X_On_Vector(corner), button2.y))
+                                {
+                                    corner2 = end - new Vector3(m_buttonSize * (button2.x - Get_X_On_Vector(corner)), 0, 0);
+                                    if (CheckOnColumnY(button1.x, Get_X_On_Vector(corner), button1.y))
+                                    {
+                                    Debug.Log("Corner2: " + corner2);
+                                    DrawLine(start, corner);
+                                    DrawLine(corner, corner2);
+                                    DrawLine(corner2, end);
+                                    break;
+                                    }
+                                }
+                            }
+                        }    
+                       
+                }    
+                if(CheckOnColumnY(button1.x,button2.x,button1.y))
+                {
+                    if(CheckOnRowX(button2.y,button1.y,button2.x))
+                    {
+                        Debug.Log("L_Ngang");
+                        DrawLine_L_Ngang(start, end, button1, button2);
+                    }
+
+                }
+                if(CheckOnRowX(button1.y, button2.y,button1.x))
+                {
+                    if(CheckOnColumnY(button2.x,button1.x,button2.y))
+                    {
+                        Debug.Log("L_DOc");
+                        DrawLine_L_Doc(start, end, button1, button2);
+                    }
+                }
+                
+        }
+        // Draw a line between the two given points
+
+        public void DrawLine_L_Ngang(Vector3 start, Vector3 end, AnimalButton button1, AnimalButton button2)
+        {
+
+            Vector3 corner = start + new Vector3(end.x - start.x, 0, 0);
+
+            if (CheckOnColumnY_Corner(button1.x, button2.x, button1.y, Get_Y_On_Vector(corner)))
+            {
+                Debug.Log("Corner.Cordi: (" + button1.x + "-" + Get_Y_On_Vector(corner) + ")");
+                DrawLine(start, corner);
+                DrawLine(corner, end);
+            }
+
+
+        }
+
+        public void DrawLine_L_Doc(Vector3 start, Vector3 end, AnimalButton button1, AnimalButton button2)
+        {
+            Vector3 corner = start + new Vector3(0, end.y - start.y, 0);
+
+            Debug.Log(corner.x + "-" + corner.y);
+
+
+            if (CheckOnRowX_Corner(button1.y, button2.y, button1.x, Get_X_On_Vector(corner)))
+            {
+                Debug.Log("Corner.Cordi: (" + button1.x + "-" + Get_Y_On_Vector(corner) + ")");
+                DrawLine(start, corner);
+                DrawLine(corner, end);
+            }
+
+        }
+        private bool CheckOnColumnY_Corner(int x1, int x2, int y1, int corner)
+        {
+
+            int temp = y1;
+            y1 = corner;
+            corner = temp;
+
+            int start = Mathf.Min(x1, x2);
+            int end = Mathf.Max(x1, x2);
+
+            for (int x = start; x <= end; x++)
+            {
+                // Has object between y1 and y2 on the line x
+                if (m_table[x, y1].m_IsObstacle)
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+        private bool CheckOnRowX_Corner(int y1, int y2, int x, int corner)
+        {
+
+            int temp = x;
+            x = corner;
+            corner = temp;
+
+            int start = Mathf.Min(y1, y2);
+            int end = Mathf.Max(y1, y2);
+            for (int y = start; y <= end; y++)
+            {
+                // Has object between y1 and y2 on the line x
+                if (m_table[x, y].m_IsObstacle)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public void DrawLine(Vector3 start, Vector3 end)
+        {
+            // Calculate the midpoint of the line
+            Vector3 midPoint = (start + end) / 2f;
+
+            // Create a new line object using the prefab
+            GameObject line = Instantiate(linePrefab, midPoint, Quaternion.identity, transform);
+
+            // Rotate the line to face the end point
+            line.transform.right = end - start;
+
+            // Scale the line to match the distance between the two points
+            Vector3 scale = line.transform.localScale;
+            scale.x = Vector3.Distance(start, end);
+            scale.y = 10;
+            line.transform.localScale = scale;
+
+            // Set the Z position of the line
+            line.transform.localPosition = new Vector3(midPoint.x, midPoint.y, 0);
+
+            Destroy(line, 0.2f);
+
+        }
+
+        //Get Value X on Vector3 corner button
+        int Get_X_On_Vector(Vector3 corner)
+        {
+
+            // Loop over the children and check each one for a matching button
+            foreach (AnimalButton child in m_buttonList)
+            {
+                AnimalButton button = child.GetComponent<AnimalButton>();
+                if (button != null && Mathf.Approximately(button.transform.localPosition.x, corner.x) && Mathf.Approximately(button.transform.localPosition.y, corner.y))
+                {
+                    return button.x;
+                }
+            }
+
+            // No matching button found
+            return -1;
+        }
+        //Get Value Y on Vector3 corner button
+        int Get_Y_On_Vector(Vector3 corner)
+        {
+
+            // Loop over the children and check each one for a matching button
+            foreach (AnimalButton child in m_buttonList)
+            {
+                AnimalButton button = child.GetComponent<AnimalButton>();
+                if (button != null && Mathf.Approximately(button.transform.localPosition.x, corner.x) && Mathf.Approximately(button.transform.localPosition.y, corner.y))
+                {
+                    return button.y;
+                }
+            }
+
+            // No matching button found
+            return -1;
+        }
         #endregion
     }
 }
