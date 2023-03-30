@@ -16,6 +16,7 @@ namespace Pikachu
         public int ButtonAmount => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
 
         [Header("Additional Properties")]                      
+        [SerializeField] GameObject m_linePrefab;
         [SerializeField] AudioSource m_clickAudio;
 
         public int PairAmount => m_pairAmount;
