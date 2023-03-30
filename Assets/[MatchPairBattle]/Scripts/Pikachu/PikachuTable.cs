@@ -16,6 +16,7 @@ namespace Pikachu
         public int ButtonAmount => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
 
         [Header("Additional Properties")]                      
+        [SerializeField] GameObject m_linePrefab;
         [SerializeField] AudioSource m_clickAudio;
 
         public int PairAmount => m_pairAmount;
@@ -31,7 +32,7 @@ namespace Pikachu
         {
             public int x;
             public int y;
-            public string ToString()
+            public override string ToString()
             {
                 return "{" + x + ";" + y + "}";
             }
@@ -179,29 +180,86 @@ namespace Pikachu
             // if two pair are on a same column or same row
             if (button1.x == button2.x)
             {
-                if(CheckOnColumnX(button1.y, button2.y, button1.x))
-                  return true;
+                if (CheckOnColumnX(button1.y, button2.y, button1.x))
+                {
+                    DrawLine(button1.transform.localPosition, button2.transform.localPosition);
+                    return true;
+                }
             }
             if (button1.y == button2.y)
             {
                 if (CheckOnRowY(button1.x, button2.x, button1.y))
+                {
+                    DrawLine(button1.transform.localPosition, button2.transform.localPosition);
+                    return true;
+                }
+            }
+
+            Vector3 middle1; Vector3 middle2;
+            // Check with Rectangle
+            if (CheckOnRectHorizontal(new Point(button1.x, button1.y), new Point(button2.x, button2.y), out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
 
-            // Check with Rectangle
-            if (CheckOnRectHorizontal(new Point(button1.x, button1.y), new Point(button2.x, button2.y))) return true;
-            if (CheckOnRectVertical(new Point(button1.x, button1.y), new Point(button2.x, button2.y))) return true;
+            if (CheckOnRectVertical(new Point(button1.x, button1.y), new Point(button2.x, button2.y), out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
+                return true;
+            }
 
             // Expandation Check
-                // Horizontal
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1)) return true;
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y),-1)) return true;
+            // Horizontal
+            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1, out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
+                return true;
+            }
+            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1, out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
+                return true;
+            }
             // Vertical
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1)) return true;
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y),-1)) return true;
+            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1, out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
+                return true;
+            }
+            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1, out middle1, out middle2))
+            {
+                DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
+                return true;
+            }
 
             button1.m_IsObstacle = true; button2.m_IsObstacle = true;
             return false;
+        }
+        #endregion
+
+        #region Draw Line
+        private void DrawLine(Vector3 start, Vector3 end)
+        {
+            var middlePoint = (start + end) / 2;
+            var lineLength = (end - start).magnitude;
+            var line = Instantiate(m_linePrefab, transform);
+            
+            line.transform.localScale = new Vector3(lineLength, 1, 1);
+            line.transform.right = (middlePoint - start).normalized;
+            line.transform.localPosition = middlePoint;
+
+            Destroy(line, 0.5f);
+        }
+        private void DrawLine_L(Vector3 start, Vector3 middle, Vector3 end)
+        {
+            DrawLine(start, middle);
+            DrawLine(middle, end);
+        }
+        private void DrawLine_U(Vector3 start, Vector3 middle1, Vector3 middle2, Vector3 end)
+        {
+            DrawLine(start, middle1);
+            DrawLine_L(middle1, middle2, end);
         }
         #endregion
 
@@ -244,7 +302,7 @@ namespace Pikachu
         }
 
         // Check pair in a rectangle
-        private bool CheckOnRectHorizontal(Point point1, Point point2)
+        private bool CheckOnRectHorizontal(Point point1, Point point2, out Vector3 middle1, out Vector3 middle2)
         {
             /* Start from upper-point to lower-point
                start ______<1>______
@@ -254,6 +312,8 @@ namespace Pikachu
                                     _______<3>_______ end         
             */
             Point startPoint = point1; Point endPoint = point2;
+            middle1 = Vector3.zero; middle2 = Vector3.zero;
+
             if (point1.x > point2.x) // Must be started from the lower column index on Horizontal (because of the FOR loop)
             {
                 startPoint = point2;
@@ -262,21 +322,21 @@ namespace Pikachu
             for (int x = startPoint.x; x <= endPoint.x; x++)
             {
                 // if line <1>, <2> and <3> are exist then this Rect is  exist too
-                    // if there is no line on row x then return false;
+
+                // if there is no line on row x then return false;
                 if (!CheckOnRowY(startPoint.x, x, startPoint.y)) return false;
+                
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
-                else 
+                if (CheckOnColumnX(startPoint.y, endPoint.y, x) && CheckOnRowY(x, endPoint.x, endPoint.y))
                 {
-                    if (CheckOnColumnX(startPoint.y, endPoint.y, x) && CheckOnRowY(x, endPoint.x, endPoint.y))
-                    {
-                        Debug.Log("[Pikachu Algorithm][CheckOnRectHorizontal] " + startPoint.ToString() + " -> Column " + x + " -> " + endPoint.ToString());
-                        return true;
-                    }                    
-                }                
+                    Debug.Log("[Pikachu Algorithm][CheckOnRectHorizontal] " + startPoint.ToString() + " -> Column " + x + " -> " + endPoint.ToString());
+                    middle1 = m_table[x, point1.y].transform.localPosition; middle2 = m_table[x, point2.y].transform.localPosition;
+                    return true;
+                }                                    
             }            
             return false;
         }
-        private bool CheckOnRectVertical(Point point1, Point point2)
+        private bool CheckOnRectVertical(Point point1, Point point2, out Vector3 middle1, out Vector3 middle2)
         {
             /* Start from left-point to right-point
                start 
@@ -290,6 +350,8 @@ namespace Pikachu
                                  end
             */
             Point startPoint = point1; Point endPoint = point2;
+            middle1 = Vector3.zero; middle2 = Vector3.zero;
+
             if (point1.y > point2.y) // Must be started from the lower row index on Vertical (because of the FOR loop)
             {
                 startPoint = point2;
@@ -301,21 +363,20 @@ namespace Pikachu
 
                     // if there is no line on row x then return false;
                 if (!CheckOnColumnX(startPoint.y, y, startPoint.x)) return false;                
+
                 // when line <1> is exist then we check line <2> and <3> to define if there is a valid path for start to end
-                else 
+                if (CheckOnRowY(startPoint.x, endPoint.x, y) && CheckOnColumnX(y, endPoint.y, endPoint.x))
                 {
-                    if (CheckOnRowY(startPoint.x, endPoint.x, y) && CheckOnColumnX(y, endPoint.y, endPoint.x))
-                    {
-                        Debug.Log("[Pikachu Algorithm][CheckOnRectVertical] " + startPoint.ToString() + " -> Row " + y + " -> " + endPoint.ToString());
-                        return true;
-                    }                        
+                    Debug.Log("[Pikachu Algorithm][CheckOnRectVertical] " + startPoint.ToString() + " -> Row " + y + " -> " + endPoint.ToString());
+                    middle1 = m_table[point1.x, y].transform.localPosition; middle2 = m_table[point2.x, y].transform.localPosition;
+                    return true;
                 }
             }
             return false;
         }
 
         // Expandation Check
-        private bool CheckOnHorizontalExpand(Point point1, Point point2, int direction)
+        private bool CheckOnHorizontalExpand(Point point1, Point point2, int direction, out Vector3 middle1, out Vector3 middle2)
         {
             /* 
              * Sample for direction = 1
@@ -334,6 +395,8 @@ namespace Pikachu
 
             */
             Point startPoint = point1; Point endPoint = point2;
+            middle1 = Vector3.zero; middle2 = Vector3.zero;
+
             if (point1.x > point2.x) // Must be started from the lower column index on Horizontal (because we have to check the line <1> is exist or not)
             {
                 startPoint = point2;
@@ -358,6 +421,7 @@ namespace Pikachu
                     if (CheckOnColumnX(startPoint.y, endPoint.y, column))
                     {
                         Debug.Log("[Pikachu Algorithm][CheckOnHorizontalExpand] " + startPoint.ToString() + " -> Row " + column + " -> " + endPoint.ToString());
+                        middle1 = m_table[column, point1.y].transform.localPosition; middle2 = m_table[column, point2.y].transform.localPosition;
                         return true;
                     }
 
@@ -367,7 +431,7 @@ namespace Pikachu
             }
             return false;
         }
-        private bool CheckOnVerticalExpand(Point point1, Point point2, int direction)
+        private bool CheckOnVerticalExpand(Point point1, Point point2, int direction, out Vector3 middle1, out Vector3 middle2)
         {
             /*
              * Sample for direction = 1
@@ -390,6 +454,8 @@ namespace Pikachu
                             
             */
             Point startPoint = point1; Point endPoint = point2;
+            middle1 = Vector3.zero; middle2 = Vector3.zero;
+
             if (point1.y > point2.y) // Must be started from the lower row index on Vertical (because we have to check the line <1> is exist or not)
             {
                 startPoint = point2;
@@ -414,6 +480,7 @@ namespace Pikachu
                     if (CheckOnRowY(startPoint.x, endPoint.x, row))
                     {
                         Debug.Log("[Pikachu Algorithm][CheckOnVerticalExpand] " + startPoint.ToString() + " -> Row " + row + " -> " + endPoint.ToString());
+                        middle1 = m_table[point1.x,row].transform.localPosition; middle2 = m_table[point2.x, row].transform.localPosition;
                         return true;
                     }
 
