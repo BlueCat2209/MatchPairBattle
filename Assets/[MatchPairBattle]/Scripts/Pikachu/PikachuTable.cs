@@ -205,6 +205,31 @@ namespace Pikachu
         }
         #endregion
 
+        #region Draw Line
+        private void DrawLine(Vector3 start, Vector3 end)
+        {
+            var middlePoint = (start + end) / 2;
+            var lineLength = (end - start).magnitude;
+            var line = Instantiate(m_linePrefab, transform);
+            
+            line.transform.localScale = new Vector3(lineLength, 1, 1);
+            line.transform.right = (middlePoint - start).normalized;
+            line.transform.localPosition = middlePoint;
+
+            Destroy(line, 0.5f);
+        }
+        private void DrawLine_L(Vector3 start, Vector3 middle, Vector3 end)
+        {
+            DrawLine(start, middle);
+            DrawLine(middle, end);
+        }
+        private void DrawLine_U(Vector3 start, Vector3 middle1, Vector3 middle2, Vector3 end)
+        {
+            DrawLine(start, middle1);
+            DrawLine_L(middle1, middle2, end);
+        }
+        #endregion
+
         #region Pikachu Algorithm
 
         // Check pair on a same line or same column
