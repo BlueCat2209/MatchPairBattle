@@ -28,7 +28,8 @@ namespace Pikachu
 
         //Draw Line Function
         [SerializeField]
-        private  GameObject linePrefab;
+        private GameObject linePrefab;
+
         private struct Point
         {
             public int x;
@@ -568,7 +569,7 @@ namespace Pikachu
                     for(int x=button1.x-1;x>=0;x--)
                         {
                             count--;
-                            if (!CheckOnRowX(button1.y, button2.y, x))
+                            if (CheckOnRowX(button1.y, button2.y, x))
                             {
                                 corner = start + new Vector3(m_buttonSize * count, 0, 0);
                                 Debug.Log("Corner1: " + corner);
@@ -686,7 +687,9 @@ namespace Pikachu
             Vector3 midPoint = (start + end) / 2f;
 
             // Create a new line object using the prefab
+           
             GameObject line = Instantiate(linePrefab, midPoint, Quaternion.identity, transform);
+           
 
             // Rotate the line to face the end point
             line.transform.right = end - start;
