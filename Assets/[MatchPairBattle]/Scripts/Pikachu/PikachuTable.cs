@@ -441,12 +441,12 @@ namespace Pikachu
                         DrawLine(start, corner);
                         DrawLine_L_Doc(corner, end, button1, button2);
 
-                        break;
+                        return;
                     case 10:
                         corner = start + new Vector3(m_buttonSize, 0, 0);
                         DrawLine(start, corner);
                         DrawLine_L_Doc(corner, end, button1, button2);
-                        break;
+                        return;
                 }
             }
             //Draw U shape Up-Down_Outside
@@ -458,13 +458,13 @@ namespace Pikachu
                         corner = start - new Vector3(0, m_buttonSize, 0);
                         DrawLine(start, corner);
                         DrawLine_L_Ngang(corner, end, button1, button2);
+                        return;
 
-                        break;
                     case 10:
                         corner = start + new Vector3(0, m_buttonSize, 0);
                         DrawLine(start, corner);
                         DrawLine_L_Ngang(corner, end, button1, button2);
-                        break;
+                        return;
                 }
             }
 
@@ -485,6 +485,7 @@ namespace Pikachu
                 if (CheckOnColumnY(button1.x, button2.x, button1.y))
                 {
                     DrawLine(start, end);
+                    return;
                 }
                   
             }
@@ -511,7 +512,7 @@ namespace Pikachu
                                       DrawLine(start, corner);
                                       DrawLine(corner, corner2);
                                       DrawLine(corner2, end);
-                                      break;
+                                      return; 
                                     }
                             }    
                                         
@@ -534,7 +535,7 @@ namespace Pikachu
                                     DrawLine(start, corner);
                                     DrawLine(corner, corner2);
                                     DrawLine(corner2, end);
-                                    break;
+                                    return;
                                     }
                                 }
                             }
@@ -559,7 +560,7 @@ namespace Pikachu
                                     DrawLine(start, corner);
                                     DrawLine(corner, corner2);
                                     DrawLine(corner2, end);
-                                    break;
+                                    return;
                                     }
                                 }
                             }    
@@ -582,7 +583,7 @@ namespace Pikachu
                                     DrawLine(start, corner);
                                     DrawLine(corner, corner2);
                                     DrawLine(corner2, end);
-                                    break;
+                                    return;
                                     }
                                 }
                             }
@@ -595,6 +596,7 @@ namespace Pikachu
                     {
                         Debug.Log("L_Ngang");
                         DrawLine_L_Ngang(start, end, button1, button2);
+                        return;
                     }
 
                 }
@@ -604,6 +606,7 @@ namespace Pikachu
                     {
                         Debug.Log("L_DOc");
                         DrawLine_L_Doc(start, end, button1, button2);
+                        return;
                     }
                 }
                 
