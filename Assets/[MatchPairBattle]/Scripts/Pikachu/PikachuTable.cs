@@ -9,7 +9,7 @@ namespace Pikachu
         [Header("Matrix Properties")]        
         [SerializeField] AnimalButton[] m_buttonTypeList;
         [SerializeField] Vector2 m_tableSize;
-        private AnimalButton[,] m_table;
+        public AnimalButton[,] m_table;
 
         public AnimalButton[,] Table => m_table;
         public Vector2 TableSize => m_tableSize;
@@ -26,7 +26,7 @@ namespace Pikachu
         private const float m_buttonSize = 75f;
         private AnimalButton m_startObject;
         private AnimalButton m_endObject;        
-        private List<AnimalButton> m_buttonList = new List<AnimalButton>();
+        public List<AnimalButton> m_buttonList = new List<AnimalButton>();
         
         private struct Point
         {

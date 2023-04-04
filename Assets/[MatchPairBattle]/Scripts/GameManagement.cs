@@ -12,12 +12,13 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using TMPro;
 using ElementSkill;
+using UnityEngine.U2D.Animation;
 
 public class GameManagement : MonoBehaviour
 {
     [Header("BASIC PROPERTIES")]
     [Header("Table Properties")]
-    [SerializeField] PikachuTable m_playerTable;
+    [SerializeField] public PikachuTable m_playerTable;
     [SerializeField] PikachuTable m_opponentTable;
 
     [Header("PlayTime Properties")]
@@ -41,6 +42,7 @@ public class GameManagement : MonoBehaviour
     [Header("Fire")]
     [SerializeField] Image m_fireElement;
     [SerializeField] Button m_fireSkill;
+    [SerializeField] public GameObject m_fireskillfrefab;
 
     [Header("Ice")]
     [SerializeField] Image m_iceElement;
@@ -58,6 +60,10 @@ public class GameManagement : MonoBehaviour
     [Header("Air")]
     [SerializeField] Image m_airElement;
     [SerializeField] Button m_airSkill;
+
+    [Header("Character")]
+    [SerializeField] public Animator m_animator;
+    [SerializeField] public SpriteLibrary m_spriteLibrary;
 
     public enum Result { VICTORY, DEFEATED, DRAW }
     public static GameManagement Instance => m_instance;
@@ -323,7 +329,10 @@ public class GameManagement : MonoBehaviour
     public void CastFireSkill()
     {
         m_fireElement.fillAmount = 0;
-        m_fireSkill.interactable = false;        
+        m_fireSkill.interactable = false;
+
+        var skill = Instantiate(m_fireskillfrefab, m_playerTable.transform);
+        skill.GetComponent<Fire>().StartSkill();
     }
     public void CastIceSkill()
     {
