@@ -131,6 +131,22 @@ namespace Pikachu
         #endregion
 
         #region Table Execute Progress
+        public List<AnimalButton> GetAnimalTypeList(AnimalButton.AnimalType type)
+        {
+            var list = new List<AnimalButton>();
+            for (int i = 0; i < m_tableSize.x; i++)
+            {
+                for (int j = 0; j < m_tableSize.y; j++)
+                {
+                    if (m_table[i, j].Type == type)
+                    {
+                        list.Add(m_table[i, j]);
+                    }
+                }
+            }
+
+            return list;
+        }
         public void OnButtonClicked(AnimalButton choosenObject)
         {
             m_clickAudio.PlayOneShot(m_clickAudio.clip);

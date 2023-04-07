@@ -42,7 +42,7 @@ public class GameManagement : MonoBehaviour
     [Header("Fire")]
     [SerializeField] Image m_fireElement;
     [SerializeField] Button m_fireSkill;
-    [SerializeField] public GameObject m_fireskillfrefab;
+    [SerializeField] GameObject m_fireskillfrefab;
 
     [Header("Ice")]
     [SerializeField] Image m_iceElement;
@@ -331,8 +331,9 @@ public class GameManagement : MonoBehaviour
         m_fireElement.fillAmount = 0;
         m_fireSkill.interactable = false;
 
+        var randomType = Random.Range(1, 6);
         var skill = Instantiate(m_fireskillfrefab, m_playerTable.transform);
-        skill.GetComponent<Fire>().StartSkill();
+        skill.GetComponent<Fire>().StartSkill(m_playerTable.GetAnimalTypeList((AnimalButton.AnimalType)randomType));
     }
     public void CastIceSkill()
     {
