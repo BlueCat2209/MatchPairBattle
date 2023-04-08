@@ -17,6 +17,7 @@ namespace ElementSkill
     {
         [Header("BASIC PROPERTIES")]
         [SerializeField] protected SkillType m_skillType;
+        protected Pikachu.PikachuTable m_targetTable;
         protected bool m_isCasting;
         protected bool m_isRelease;
 
