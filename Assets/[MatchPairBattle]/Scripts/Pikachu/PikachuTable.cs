@@ -9,24 +9,25 @@ namespace Pikachu
         [Header("Matrix Properties")]        
         [SerializeField] AnimalButton[] m_buttonTypeList;
         [SerializeField] Vector2 m_tableSize;
-        private AnimalButton[,] m_table;
+        public AnimalButton[,] m_table;
 
         public AnimalButton[,] Table => m_table;
         public Vector2 TableSize => m_tableSize;
-        public int ButtonAmount => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
+        public int ButtonAmountDefault => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
 
         [Header("Additional Properties")]                      
         [SerializeField] GameObject m_linePrefab;
         [SerializeField] AudioSource m_clickAudio;
 
-        public int PairAmount => m_pairAmount;
-        public bool IsTableEmpty => (m_pairAmount <= 0) ? true : false;        
+        public int CurrentButtonAmount => m_buttonAmount;
+        public bool IsTableEmpty => (m_buttonAmount <= 0) ? true : false;        
         
-        private int m_pairAmount;
+        [SerializeField]
+        private int m_buttonAmount;
         private const float m_buttonSize = 75f;
         private AnimalButton m_startObject;
         private AnimalButton m_endObject;        
-        private List<AnimalButton> m_buttonList = new List<AnimalButton>();
+        public List<AnimalButton> m_buttonList = new List<AnimalButton>();
         
         private struct Point
         {
@@ -51,10 +52,13 @@ namespace Pikachu
             int column = (int)m_tableSize.y;
 
             m_table = new AnimalButton[row, column];
-            m_pairAmount = ((row - 2) * (column - 2)) / 2;
+            m_buttonAmount = ((row - 2) * (column - 2));
 
             // Create normal button
-            for (int i = 0; i < m_pairAmount; i++)
+            var normalButtonHolder = new GameObject("NormalButtonHolder");
+            normalButtonHolder.transform.SetParent(transform, false);
+            normalButtonHolder.transform.localPosition = Vector3.zero;
+            for (int i = 0; i < m_buttonAmount / 2; i++)
             {
                 // Create random button type
                 int random = Random.Range(1, m_buttonTypeList.Length);
@@ -66,8 +70,8 @@ namespace Pikachu
                     x1 = Random.Range(1, row - 1);
                     y1 = Random.Range(1, column - 1);
                 }
-                m_table[x1, y1] = Instantiate(m_buttonTypeList[random], this.transform);
-                m_table[x1, y1].transform.SetParent(this.transform, false);
+                m_table[x1, y1] = Instantiate(m_buttonTypeList[random], normalButtonHolder.transform);
+                m_table[x1, y1].transform.SetParent(normalButtonHolder.transform, false);
 
                 int x2 = 1, y2 = 1;
                 while (m_table[x2, y2] != null)
@@ -75,19 +79,22 @@ namespace Pikachu
                     x2 = Random.Range(1, row - 1);
                     y2 = Random.Range(1, column - 1);
                 }
-                m_table[x2, y2] = Instantiate(m_buttonTypeList[random], this.transform);
-                m_table[x2, y2].transform.SetParent(this.transform, false);
+                m_table[x2, y2] = Instantiate(m_buttonTypeList[random], normalButtonHolder.transform);
+                m_table[x2, y2].transform.SetParent(normalButtonHolder.transform, false);
             }
 
             // Create emtpy button
+            var emptyButtonHolder = new GameObject("EmptyButtonHolder");
+            emptyButtonHolder.transform.SetParent(transform, false);
+            emptyButtonHolder.transform.localPosition = Vector3.zero;
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
                 {
                     if ((i == 0) || (i == row - 1) || (j == 0) || (j == column - 1))
                     {
-                        m_table[i, j] = Instantiate(m_buttonTypeList[0], this.transform);
-                        m_table[i, j].transform.SetParent(transform, false);                        
+                        m_table[i, j] = Instantiate(m_buttonTypeList[0], emptyButtonHolder.transform);
+                        m_table[i, j].transform.SetParent(emptyButtonHolder.transform, false);                        
                     }
                 }
             }
@@ -111,17 +118,36 @@ namespace Pikachu
             // Set position & table size
             m_tableSize = tableSize;
             float rowStart = -((tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
+            
             // Create table
             m_table = new AnimalButton[(int)tableSize.x, (int)tableSize.y];
-            m_pairAmount = (int)((tableSize.x - 2) * (tableSize.y - 2) / 2);
+            m_buttonAmount = (int)((tableSize.x - 2) * (tableSize.y - 2));
+
+            // Create button holder             
+            var normalButtonHolder = new GameObject("NormalButtonHolder");
+            normalButtonHolder.transform.SetParent(transform, false);
+            normalButtonHolder.transform.localPosition = Vector3.zero;
+
+            var emptyButtonHolder = new GameObject("EmptyButtonHolder");
+            emptyButtonHolder.transform.SetParent(transform, false);
+            emptyButtonHolder.transform.localPosition = Vector3.zero;
 
             for (int i = 0; i < tableSize.x; i++)
             {
                 for (int j = 0; j < tableSize.y; j++)
                 {
-                    // Create button
-                    var button = Instantiate(m_buttonTypeList[buttonCode[i, j]], this.transform);
+                    // Create button                    
+                    var button = Instantiate(m_buttonTypeList[buttonCode[i, j]]);
+                    if (button.Type == AnimalButton.AnimalType.None)
+                    {
+                        button.transform.SetParent(emptyButtonHolder.transform, false);
+                    }
+                    else
+                    {
+                        button.transform.SetParent(normalButtonHolder.transform, false);
+                    }
                     button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize, 0);
+                    
                     m_table[i, j] = button;
                     m_table[i, j].x = i;
                     m_table[i, j].y = j;
@@ -131,6 +157,30 @@ namespace Pikachu
         #endregion
 
         #region Table Execute Progress
+        public List<byte[]> GetAnimalTypeList(AnimalButton.AnimalType targetType)
+        {
+            // Get a list of animal button which has the same type with targetType
+            var animalList = new List<Vector2>();
+            for (int i = 0; i < m_tableSize.x; i++)
+            {
+                for (int j = 0; j < m_tableSize.y; j++)
+                {
+                    if (m_table[i, j].Type == targetType)
+                    {
+                        animalList.Add(new Vector2(i, j));
+                    }
+                }
+            }
+
+            // Translate the animalList into a coordinate array
+            var animalCoordinates = new List<byte[]>();
+            for (int i = 0; i < animalList.Count; i++)
+            {
+                animalCoordinates.Add(new byte[] { (byte)animalList[i].x, (byte)animalList[i].y });
+            }
+
+            return animalCoordinates;
+        }
         public void OnButtonClicked(AnimalButton choosenObject)
         {
             m_clickAudio.PlayOneShot(m_clickAudio.clip);
@@ -153,9 +203,9 @@ namespace Pikachu
             }
 
             if (CheckValidPair(m_startObject, m_endObject))
-            {                
-                HidePair(m_startObject, m_endObject);
+            {
                 GameManagement.Instance.SendPlayerPairData(m_startObject, m_endObject, m_endObject.Type);
+                HidePair(m_startObject, m_endObject);                
             }
 
             // Turn off choosen mode
@@ -168,10 +218,15 @@ namespace Pikachu
         }
         public void HidePair(AnimalButton start, AnimalButton end)
         {
-            m_pairAmount--;
+            m_buttonAmount -= 2;
             start.OnHideButton();
             end.OnHideButton();            
-        }        
+        }
+        public void HideButton(AnimalButton button)
+        {
+            m_buttonAmount--;
+            button.OnHideButton();
+        }
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {
             if (button1.Type != button2.Type) return false;

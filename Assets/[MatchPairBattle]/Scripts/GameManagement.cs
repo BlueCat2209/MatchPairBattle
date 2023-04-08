@@ -12,18 +12,30 @@ using Photon.Realtime;
 using ExitGames.Client.Photon;
 using TMPro;
 using ElementSkill;
+using UnityEngine.U2D.Animation;
 
 public class GameManagement : MonoBehaviour
 {
+    private static GameManagement m_instance;
+    public static GameManagement Instance => m_instance;
+
     [Header("BASIC PROPERTIES")]
     [Header("Table Properties")]
     [SerializeField] PikachuTable m_playerTable;
     [SerializeField] PikachuTable m_opponentTable;
+    public PikachuTable PlayerTable => m_playerTable;
+    public PikachuTable OpponentTable => m_opponentTable;
+
+    [Header("Avatar Properties")]
+    [SerializeField] Transform m_playerAvatar;
+    [SerializeField] public Animator m_animator;
+    [SerializeField] public SpriteLibrary m_spriteLibrary;
 
     [Header("PlayTime Properties")]
     [SerializeField] float m_targetTime;
     [SerializeField] Image m_countDownImage;
     [SerializeField] Gradient m_gradientColor;    
+    private float m_currentTime;
     [Space]
 
     [Header("UI PROPERTIES")]
@@ -32,15 +44,16 @@ public class GameManagement : MonoBehaviour
     [Space]
     [SerializeField] Canvas m_endGameCanvas;
     [SerializeField] TextMeshProUGUI m_textScore;
-    [SerializeField] TextMeshProUGUI m_textResult;    
+    [SerializeField] TextMeshProUGUI m_textResult;
     [Space]
 
-    [Header("ELEMENTS PROPERTIES")]
-    [SerializeField] int m_stackAmount;
+    [Header("ELEMENTS PROPERTIES")]    
+    [SerializeField] int m_stackAmount;    
 
     [Header("Fire")]
     [SerializeField] Image m_fireElement;
     [SerializeField] Button m_fireSkill;
+    [SerializeField] GameObject m_fireskillfrefab;
 
     [Header("Ice")]
     [SerializeField] Image m_iceElement;
@@ -58,15 +71,16 @@ public class GameManagement : MonoBehaviour
     [Header("Air")]
     [SerializeField] Image m_airElement;
     [SerializeField] Button m_airSkill;
+    [Space]
 
-    public enum Result { VICTORY, DEFEATED, DRAW }
-    public static GameManagement Instance => m_instance;
-    public int FinalPoint => (m_playerTable.ButtonAmount - m_playerTable.PairAmount * 2) + (int)(m_targetTime - m_currentTime);
-    private static GameManagement m_instance;    
-    private float m_currentTime;    
+    [SerializeField] GameStatus m_currentStatus = GameStatus.INITIALIZING;
+    public enum GameStatus { VICTORY, DEFEATED, DRAW, PLAYING, INITIALIZING }
+    public int FinalPoint => (m_playerTable.ButtonAmountDefault - m_playerTable.CurrentButtonAmount) + (int)(m_targetTime - m_currentTime);                
 
     private void OnEnable() => PhotonNetwork.NetworkingClient.EventReceived += OnEventReceive;
     private void OnDisable() => PhotonNetwork.NetworkingClient.EventReceived -= OnEventReceive;
+
+    #region Unity Message
     private void Awake()
     {
         if (m_instance == null)
@@ -80,30 +94,37 @@ public class GameManagement : MonoBehaviour
     }
     private void Update()
     {
+        if (m_currentStatus != GameStatus.PLAYING) return;
+
         if (m_currentTime < m_targetTime)
         {
             m_currentTime += Time.deltaTime;
             m_countDownImage.fillAmount = 1f - m_currentTime / m_targetTime;
             m_countDownImage.color = m_gradientColor.Evaluate(m_currentTime / m_targetTime);
+
+            if (m_playerTable.IsTableEmpty) SetGameFinish(GameStatus.VICTORY);
+            if (m_opponentTable.IsTableEmpty) SetGameFinish(GameStatus.DEFEATED);
         }
         else
         {
-            if (m_playerTable.PairAmount < m_opponentTable.PairAmount)
+            if (m_playerTable.CurrentButtonAmount < m_opponentTable.CurrentButtonAmount)
             {
-                SetGameFinish(Result.VICTORY);
+                SetGameFinish(GameStatus.VICTORY);
             }
             else
-            if (m_playerTable.PairAmount > m_opponentTable.PairAmount)
+            if (m_playerTable.CurrentButtonAmount > m_opponentTable.CurrentButtonAmount)
             {
-                SetGameFinish(Result.DEFEATED);
+                SetGameFinish(GameStatus.DEFEATED);
             }
             else
             {
-                SetGameFinish(Result.DRAW);
+                SetGameFinish(GameStatus.DRAW);
             }            
         }    
     }
+    #endregion
 
+    #region Photon Event
     protected virtual void OnEventReceive(EventData _dataReceive)
     {
         // Import data
@@ -118,7 +139,7 @@ public class GameManagement : MonoBehaviour
                 SetOpponentPairData(data);
                 break;
             case PhotonEventCode.TransferSkill:
-                SetOppoentSkill(data);
+                SetOpponentSkill(data);
                 break;
         }
     }
@@ -141,6 +162,7 @@ public class GameManagement : MonoBehaviour
 
         // Create table
         m_opponentTable.CreateTable(tableCode, tableSize);
+        m_currentStatus = GameStatus.PLAYING;   
     }
     protected virtual void SetOpponentPairData(object[] data)
     {        
@@ -153,12 +175,8 @@ public class GameManagement : MonoBehaviour
         AnimalButton start = m_opponentTable.Table[(int)startCor.x, (int)startCor.y];
         AnimalButton end = m_opponentTable.Table[(int)endCor.x, (int)endCor.y];
         m_opponentTable.HidePair(start, end);
-        if (m_opponentTable.IsTableEmpty)
-        {
-            SetGameFinish(Result.DEFEATED);
-        }
     }
-    protected virtual void SetOppoentSkill(object[] data)
+    protected virtual void SetOpponentSkill(object[] data)
     {
         // Extract data
         byte skillCode = (byte)data[0];
@@ -167,7 +185,12 @@ public class GameManagement : MonoBehaviour
         switch ((SkillType)skillCode)
         {
             case SkillType.Fire:
-                HitFireSkill();
+                var skillTargets = new List<byte[]>();
+                for (int i = 1; i < data.Length; i++)
+                {
+                    skillTargets.Add((byte[])data[i]);
+                }
+                HitFireSkill(skillTargets);
                 break;
             case SkillType.Ice:
                 HitIceSkill();
@@ -184,10 +207,32 @@ public class GameManagement : MonoBehaviour
         }
     }
 
-    public void SendPlayerSkill(int skillCode)
+    public void SendPlayerSkill(byte skillCode, object includedData = null)
     {
         // Package data
-        object[] dataSend = new object[] { (byte)skillCode };
+        object[] dataSend;
+        switch ((SkillType)skillCode)
+        {
+            case SkillType.Fire:
+                {
+                    var targetList = (List<byte[]>)includedData;
+                    dataSend = new object[targetList.Count + 1];
+                    dataSend[0] = skillCode;
+
+                    for (int i = 0; i < targetList.Count; i++)
+                    {
+                        dataSend[i + 1] = targetList[i];
+                    }
+                }                
+                break;
+
+            default:
+                {
+                    dataSend = new object[] { skillCode };
+                }
+                break;
+        }        
+        
 
         // Select other client to receive this data
         RaiseEventOptions targetOption = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
@@ -201,8 +246,7 @@ public class GameManagement : MonoBehaviour
             );
     }
     public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalButton.AnimalType type)
-    {
-        if (m_playerTable.IsTableEmpty) SetGameFinish(Result.VICTORY);
+    {        
         CalculatePlayerSkill(type);
 
         // Prepare start & end Cordinates
@@ -262,6 +306,7 @@ public class GameManagement : MonoBehaviour
             SendOptions.SendUnreliable
             );
     }
+    #endregion
 
     private void CalculatePlayerSkill(AnimalButton.AnimalType type)
     {
@@ -289,11 +334,12 @@ public class GameManagement : MonoBehaviour
                 break;
         }        
     }
-    private void SetGameFinish(Result gameResult)
+    private void SetGameFinish(GameStatus gameResult)
     {
+        m_currentStatus = gameResult;
         switch (gameResult)
         {
-            case Result.VICTORY:
+            case GameStatus.VICTORY:
                 {
                     m_endGameCanvas.gameObject.SetActive(true);
                     m_textScore.text = "Score: " + FinalPoint;
@@ -301,7 +347,7 @@ public class GameManagement : MonoBehaviour
                 }
             break;
 
-            case Result.DEFEATED:
+            case GameStatus.DEFEATED:
                 {
                     m_endGameCanvas.gameObject.SetActive(true);
                     m_textScore.text = "Score: " + FinalPoint;
@@ -309,7 +355,7 @@ public class GameManagement : MonoBehaviour
                 }
             break;
 
-            case Result.DRAW:
+            case GameStatus.DRAW:
                 {
                     m_endGameCanvas.gameObject.SetActive(true);
                     m_textScore.text = "Score: " + FinalPoint;
@@ -323,7 +369,21 @@ public class GameManagement : MonoBehaviour
     public void CastFireSkill()
     {
         m_fireElement.fillAmount = 0;
-        m_fireSkill.interactable = false;        
+        m_fireSkill.interactable = false;
+
+        var targetButtonsType = new List<byte[]>();
+        for (int i = 1; i <= 6; i++)
+        {
+            var currentButtonsType = m_playerTable.GetAnimalTypeList((AnimalButton.AnimalType)i);
+            if (targetButtonsType.Count < currentButtonsType.Count)
+            {
+                targetButtonsType = currentButtonsType;
+            }
+        }
+        var skill = Instantiate(m_fireskillfrefab, m_playerTable.transform);
+
+        SendPlayerSkill((int)SkillType.Fire, targetButtonsType);
+        skill.GetComponent<Fire>().StartSkill(targetButtonsType, m_playerAvatar.position);        
     }
     public void CastIceSkill()
     {
@@ -331,29 +391,43 @@ public class GameManagement : MonoBehaviour
         m_iceSkill.interactable = false;
 
         var skill = Instantiate(m_iceFreezePrefab, m_opponentTable.transform);
+
+        SendPlayerSkill((int)SkillType.Ice);
         skill.GetComponent<Ice>().StartSkill();
     }
     public void CastWoodSkill()
     {
         m_woodElement.fillAmount = 0;
         m_woodSkill.interactable = false;
+
+        SendPlayerSkill((int)SkillType.Wood);
     }
     public void CastEarthSkill()
     {
         m_earthElement.fillAmount = 0;
         m_earthSkill.interactable = false;
+
+        SendPlayerSkill((int)SkillType.Earth);
     }
     public void CastAirSkill()
     {
         m_airElement.fillAmount = 0;
         m_airSkill.interactable = false;
+
+        SendPlayerSkill((int)SkillType.Air);
     }
     #endregion
 
     #region Hit Skills
-    public void HitFireSkill()
-    {
-
+    public void HitFireSkill(List<byte[]> buttonTargets)
+    {        
+        var skill = Instantiate(m_fireskillfrefab, m_opponentTable.transform);        
+        skill.GetComponent<Fire>().StartSkill
+        (
+            skillTargets: buttonTargets, 
+            skillStart: m_opponentTable.transform.TransformPoint(Vector3.zero),
+            isPlayerCast: false
+        );
     }
     public void HitIceSkill()
     {
