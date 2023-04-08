@@ -42,7 +42,8 @@ namespace Pikachu
         public void OnHideButton()
         {
             m_IsObstacle = false;
-            m_Image.enabled = false;            
+            m_Image.enabled = false;
+            m_type = AnimalType.None;
             this.gameObject.SetActive(false);
             this.GetComponent<Button>().interactable = false;            
         }
