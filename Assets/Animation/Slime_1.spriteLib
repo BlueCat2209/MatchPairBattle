@@ -1,0 +1,169 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &1
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5e6fedc2472449cead18ef23b5cb30d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Library:
+  - m_Name: Idle
+    m_Hash: 1008081451
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Idle_0
+      m_Hash: 288431053
+      m_Sprite: {fileID: 1198652728, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1198652728, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+    - m_Name: Idle_1
+      m_Hash: 641084251
+      m_Sprite: {fileID: 1444928808, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1444928808, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+    - m_Name: Idle_2
+      m_Hash: 1061124833
+      m_Sprite: {fileID: 1303304280, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1303304280, guid: 3ea38fbaf0bbdc341b063e771197d79d, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 3
+  - m_Name: Cast_spell
+    m_Hash: 203596747
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Cast_Light_3
+      m_Hash: 966685328
+      m_Sprite: {fileID: -528826577, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -528826577, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+    - m_Name: Cast_Light_4
+      m_Hash: 670754611
+      m_Sprite: {fileID: 721923363, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 721923363, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 2
+  - m_Name: Spelling_Light
+    m_Hash: 995154381
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Cast_Light_0
+      m_Hash: 546775850
+      m_Sprite: {fileID: -1620012474, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -1620012474, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+    - m_Name: Cast_Light_1
+      m_Hash: 395318204
+      m_Sprite: {fileID: 559933579, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 559933579, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+    - m_Name: Cast_Light_2
+      m_Hash: 244924934
+      m_Sprite: {fileID: -366329176, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -366329176, guid: 681e2277eeee7b24ba16a57b5b43dfd4, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 3
+  - m_Name: Spelling_IceFire
+    m_Hash: 1025709040
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Cast_IceFire_5
+      m_Hash: 913600233
+      m_Sprite: {fileID: -363028355, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -363028355, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    - m_Name: Cast_IceFire_4
+      m_Hash: 24338047
+      m_Sprite: {fileID: 1526749979, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1526749979, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    - m_Name: Cast_IceFire_3
+      m_Hash: 521653212
+      m_Sprite: {fileID: -2010885046, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -2010885046, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    - m_Name: Cast_IceFire_2
+      m_Hash: 672201546
+      m_Sprite: {fileID: 498556163, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 498556163, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    - m_Name: Cast_IceFire_1
+      m_Hash: 823765744
+      m_Sprite: {fileID: 1295680359, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1295680359, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    - m_Name: Cast_IceFire_0
+      m_Hash: 102668902
+      m_Sprite: {fileID: 1604466844, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1604466844, guid: ff4fe164e5e99fd438da3d3206cf00a7, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 6
+  - m_Name: Hurt
+    m_Hash: 666872612
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Freeze.png_0
+      m_Hash: 235827875
+      m_Sprite: {fileID: 1603426955, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 1603426955, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+    - m_Name: Freeze.png_1
+      m_Hash: 956908085
+      m_Sprite: {fileID: 92741781, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 92741781, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 2
+  - m_Name: Hurt_(Freezed)
+    m_Hash: 661622707
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: Freeze.png_2
+      m_Hash: 536875919
+      m_Sprite: {fileID: 502206338, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 502206338, guid: 239d41f8cc3201542aad801b941b5afd, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 1
+  - m_Name: Hurt_(Blind)
+    m_Hash: 880734586
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: blind.png_0
+      m_Hash: 726875968
+      m_Sprite: {fileID: -125127350, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: -125127350, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 1
+  - m_Name: Idle_(Blinding)
+    m_Hash: 913600247
+    m_CategoryList: []
+    m_OverrideEntries:
+    - m_Name: blind.png_2
+      m_Hash: 90005100
+      m_Sprite: {fileID: 801520477, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 801520477, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+    - m_Name: blind.png_1
+      m_Hash: 475271126
+      m_Sprite: {fileID: 591941397, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 591941397, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+    - m_Name: blind.png_3
+      m_Hash: 844787450
+      m_Sprite: {fileID: 625183190, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+      m_FromMain: 0
+      m_SpriteOverride: {fileID: 625183190, guid: d9822124962f2a440a0d8303d25f8540, type: 3}
+    m_FromMain: 0
+    m_EntryOverrideCount: 3
+  m_PrimaryLibraryGUID: 
