@@ -54,11 +54,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_type: 3
-  m_RectTransform: {fileID: 5920779444162403664}
-  m_Image: {fileID: 5920779444162403670}
-  m_IsObstacle: 1
-  x: 0
-  y: 0
+  m_isObstacle: 1
+  m_coordinateX: 0
+  m_coordinateY: 0
 --- !u!222 &5920779444162403671
 CanvasRenderer:
   m_ObjectHideFlags: 0
