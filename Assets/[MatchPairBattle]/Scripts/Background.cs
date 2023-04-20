@@ -13,7 +13,7 @@ public class Background : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        x = Random.Range(0, 3);
+        x = Random.Range(0, Sprite.Length);
         background.sprite = Sprite[x];
     }
 

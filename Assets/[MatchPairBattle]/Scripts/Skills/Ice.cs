@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +8,8 @@ namespace ElementSkill
         [Header("SKILL PROPERTIES")]
         [SerializeField] Image m_skillImage;
         [SerializeField] float m_skillSpeed;
+
+        private const float m_castingTime = 10f;
 
         // Start is called before the first frame update
         void Start()
@@ -24,7 +24,7 @@ namespace ElementSkill
             {
                 if (m_skillImage.fillAmount < 1f)
                 {
-                    m_skillImage.fillAmount += Time.deltaTime * 10f;
+                    m_skillImage.fillAmount += Time.deltaTime * m_castingTime;
                 }
                 else
                 {

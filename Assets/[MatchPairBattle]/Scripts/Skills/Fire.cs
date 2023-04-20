@@ -1,7 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using System.Collections.Generic;
 
 namespace ElementSkill
 {
@@ -40,28 +38,27 @@ namespace ElementSkill
                 for (int i = 0; i < m_fireAmount; i++)
                 {
                     m_targetTable.HideButton(m_animalButtons[i]);
-                    Destroy(m_fireBallTransform[i].gameObject, 2f);
+                    Destroy(m_fireBallTransform[i].gameObject, 1f);
                 }
-                Destroy(gameObject, 2f);
+                Destroy(gameObject, 1f);
             }
         }
 
         public virtual void StartSkill(List<byte[]> skillTargets, Vector3 skillStart, bool isPlayerCast = true)
         {
-            m_isCasting = true;                        
+            m_isCasting = true;
+            m_fireAmount = (skillTargets.Count >= 6) ? 6 : (skillTargets.Count / 2) * 2;
+            m_targetTable = (isPlayerCast) ? GameManagement.Instance.PlayerTable : GameManagement.Instance.OpponentTable;
 
-            for (int i = 0; i < skillTargets.Count; i++)
+            for (int i = 0; i < m_fireAmount; i++)
             {
-                m_targetTable = (isPlayerCast) ? GameManagement.Instance.PlayerTable : GameManagement.Instance.OpponentTable;
+                // Get fireBallTarget information
                 var animalButton = m_targetTable.Table[skillTargets[i][0], skillTargets[i][1]];
                 m_animalButtons.Add(animalButton);
                 m_fireBallTarget.Add(animalButton.transform.position);
-            }
-            m_fireAmount = (skillTargets.Count >= 6) ? 6 : (skillTargets.Count / 2) * 2;
-            for (int i = 0; i < m_fireAmount; i++)
-            {               
+
+                // Create fireball
                 var skill = Instantiate(m_firePrefab, transform);
-                    
                 skill.transform.position = skillStart;
                 m_fireBallTransform.Add(skill.transform);
             }

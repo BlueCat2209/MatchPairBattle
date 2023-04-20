@@ -5,47 +5,106 @@ using UnityEngine.UI;
 
 namespace Pikachu
 {
+    public enum AnimalType
+    {
+        None = 0,
+        Fire = 1,
+        Ice = 2,
+        Wood = 3,
+        Earth = 4,
+        Air = 5,        
+    }
+
     public class AnimalButton : MonoBehaviour
     {
         [SerializeField] AnimalType m_type;
-        private PikachuTable m_PikachuTable;
+        [SerializeField] bool m_isObstacle;
 
-        public enum AnimalType 
+        [SerializeField] int m_coordinateX;
+        [SerializeField] int m_coordinateY;
+
+        private Image m_image;
+        private PikachuTable m_pikachuTable;
+        private RectTransform m_rectTransform;
+        
+        public AnimalType Type
         {
-            None = 0,
-            Fire = 1, 
-            Ice  = 2, 
-            Wood = 3, 
-            Earth= 4, 
-            Air  = 5 
+            get => m_type;
+            set => m_type = value;            
+        }
+        public bool IsObstacle
+        {
+            get => m_isObstacle;
+            set => m_isObstacle = value;
+        }
+
+        public Image Image
+        {
+            get
+            {
+                if (m_image == null)
+                {
+                    m_image = GetComponent<Image>();
+                }
+                return m_image;
+            }
+            set => m_image = value;
+        }
+        public PikachuTable PikachuTable
+        {
+            get
+            {
+                if (m_pikachuTable == null)
+                {
+                    m_pikachuTable = GetComponentInParent<PikachuTable>();
+                }
+                return m_pikachuTable;
+            }
+            set => m_pikachuTable = value;
+        }
+        public RectTransform RectTransform
+        {
+            get
+            {
+                if (m_rectTransform == null)
+                {
+                    m_rectTransform = GetComponent<RectTransform>();
+                }
+                return m_rectTransform;
+            }
+            set => m_rectTransform = value;
         }                
-        public AnimalType Type => m_type;
 
-        public RectTransform m_RectTransform;
-        public Image m_Image;
-
-        public bool m_IsObstacle;
-        public int x;
-        public int y;
+        public int CoordinateX
+        {
+            get => m_coordinateX;
+            set => m_coordinateX = value;
+        }
+        public int CoordinateY
+        {
+            get => m_coordinateY;
+            set => m_coordinateY = value;
+        }
 
         // Start is called before the first frame update
-        void Start()
+        void Awake()
         {            
-            m_RectTransform = GetComponent<RectTransform>();
-            m_PikachuTable = GetComponentInParent<PikachuTable>();
         }
 
+        [ContextMenu("Click button")]
         public void OnButtonClicked()
         {
-            m_PikachuTable.OnButtonClicked(this.gameObject.GetComponent<AnimalButton>());
+            PikachuTable.OnButtonClicked(this.gameObject.GetComponent<AnimalButton>());
         }
+
+        [ContextMenu("Hide button")]
         public void OnHideButton()
         {
-            m_IsObstacle = false;
-            m_Image.enabled = false;
+            m_isObstacle = false;
             m_type = AnimalType.None;
-            this.gameObject.SetActive(false);
-            this.GetComponent<Button>().interactable = false;            
+            Image.color = new Color(0, 0, 0, 0);
+            
+            this.GetComponent<Button>().interactable = false;
         }
     }
 }

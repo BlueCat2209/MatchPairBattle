@@ -9,6 +9,7 @@ namespace Pikachu
         [Header("Matrix Properties")]        
         [SerializeField] AnimalButton[] m_buttonTypeList;
         [SerializeField] Vector2 m_tableSize;
+        [SerializeField] TMPro.TextMeshProUGUI m_buttonAmountText;
         public AnimalButton[,] m_table;
 
         public AnimalButton[,] Table => m_table;
@@ -21,13 +22,13 @@ namespace Pikachu
 
         public int CurrentButtonAmount => m_buttonAmount;
         public bool IsTableEmpty => (m_buttonAmount <= 0) ? true : false;        
-        
-        [SerializeField]
+                
         private int m_buttonAmount;
         private const float m_buttonSize = 75f;
         private AnimalButton m_startObject;
-        private AnimalButton m_endObject;        
-        public List<AnimalButton> m_buttonList = new List<AnimalButton>();
+        private AnimalButton m_endObject;
+        private GameObject m_emptyButtonHolder;
+        private GameObject m_normalButtonHolder;
         
         private struct Point
         {
@@ -44,6 +45,14 @@ namespace Pikachu
             }
         };
 
+        private void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                ShuffleTable();
+            }
+            m_buttonAmountText.text = m_buttonAmount.ToString();
+        }
         #region Table Creator        
         [ContextMenu("Create table")]
         public void CreatePlayerTable()
@@ -55,9 +64,9 @@ namespace Pikachu
             m_buttonAmount = ((row - 2) * (column - 2));
 
             // Create normal button
-            var normalButtonHolder = new GameObject("NormalButtonHolder");
-            normalButtonHolder.transform.SetParent(transform, false);
-            normalButtonHolder.transform.localPosition = Vector3.zero;
+            m_normalButtonHolder = new GameObject("NormalButtonHolder");
+            m_normalButtonHolder.transform.SetParent(transform, false);
+            m_normalButtonHolder.transform.localPosition = Vector3.zero;
             for (int i = 0; i < m_buttonAmount / 2; i++)
             {
                 // Create random button type
@@ -70,8 +79,8 @@ namespace Pikachu
                     x1 = Random.Range(1, row - 1);
                     y1 = Random.Range(1, column - 1);
                 }
-                m_table[x1, y1] = Instantiate(m_buttonTypeList[random], normalButtonHolder.transform);
-                m_table[x1, y1].transform.SetParent(normalButtonHolder.transform, false);
+                m_table[x1, y1] = Instantiate(m_buttonTypeList[random], m_normalButtonHolder.transform);
+                m_table[x1, y1].transform.SetParent(m_normalButtonHolder.transform, false);
 
                 int x2 = 1, y2 = 1;
                 while (m_table[x2, y2] != null)
@@ -79,22 +88,23 @@ namespace Pikachu
                     x2 = Random.Range(1, row - 1);
                     y2 = Random.Range(1, column - 1);
                 }
-                m_table[x2, y2] = Instantiate(m_buttonTypeList[random], normalButtonHolder.transform);
-                m_table[x2, y2].transform.SetParent(normalButtonHolder.transform, false);
+                m_table[x2, y2] = Instantiate(m_buttonTypeList[random], m_normalButtonHolder.transform);
+                m_table[x2, y2].transform.SetParent(m_normalButtonHolder.transform, false);
             }
 
             // Create emtpy button
-            var emptyButtonHolder = new GameObject("EmptyButtonHolder");
-            emptyButtonHolder.transform.SetParent(transform, false);
-            emptyButtonHolder.transform.localPosition = Vector3.zero;
+            m_emptyButtonHolder = new GameObject("EmptyButtonHolder");
+            m_emptyButtonHolder.transform.SetParent(transform, false);
+            m_emptyButtonHolder.transform.localPosition = Vector3.zero;
             for (int i = 0; i < row; i++)
             {
                 for (int j = 0; j < column; j++)
                 {
                     if ((i == 0) || (i == row - 1) || (j == 0) || (j == column - 1))
                     {
-                        m_table[i, j] = Instantiate(m_buttonTypeList[0], emptyButtonHolder.transform);
-                        m_table[i, j].transform.SetParent(emptyButtonHolder.transform, false);                        
+                        m_table[i, j] = Instantiate(m_buttonTypeList[0], m_emptyButtonHolder.transform);
+                        m_table[i, j].transform.SetParent(m_emptyButtonHolder.transform, false);
+                        m_table[i, j].IsObstacle = false;
                     }
                 }
             }
@@ -106,60 +116,66 @@ namespace Pikachu
                 for (int j = 0; j < column; j++)
                 {                   
                     // Set position and location of button
-                    m_table[i, j].m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize,  0);
-                    m_table[i, j].x = i; m_table[i, j].y = j;
-                    m_buttonList.Add(m_table[i, j]);
+                    m_table[i, j].RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize,  0);
+                    m_table[i, j].CoordinateX = i; m_table[i, j].CoordinateY = j;                    
                 }
             }
-            GameManagement.Instance.SendPlayerTableData();
+            GameManagement.Instance.SendTableData(m_table, m_tableSize);
         }                
-        public void CreateTable(byte[,] buttonCode, Vector2 tableSize)
+        public void CreateTable(byte[,] buttonCode, Vector2 tableSize, bool isCreateTableFirstTime = true)
         {
+            // Remove table data
+            RemoveTableData();
+
             // Set position & table size
             m_tableSize = tableSize;
             float rowStart = -((tableSize.x - 1) / 2) * m_buttonSize; float columnStart = -((tableSize.y - 1) / 2) * m_buttonSize;
             
             // Create table
             m_table = new AnimalButton[(int)tableSize.x, (int)tableSize.y];
-            m_buttonAmount = (int)((tableSize.x - 2) * (tableSize.y - 2));
+            m_buttonAmount = (isCreateTableFirstTime) ? (int)((tableSize.x - 2) * (tableSize.y - 2)) : m_buttonAmount;
 
             // Create button holder             
-            var normalButtonHolder = new GameObject("NormalButtonHolder");
-            normalButtonHolder.transform.SetParent(transform, false);
-            normalButtonHolder.transform.localPosition = Vector3.zero;
+            m_normalButtonHolder = new GameObject("NormalButtonHolder");
+            m_normalButtonHolder.transform.SetParent(transform, false);
+            m_normalButtonHolder.transform.localPosition = Vector3.zero;
 
-            var emptyButtonHolder = new GameObject("EmptyButtonHolder");
-            emptyButtonHolder.transform.SetParent(transform, false);
-            emptyButtonHolder.transform.localPosition = Vector3.zero;
+            m_emptyButtonHolder = new GameObject("EmptyButtonHolder");
+            m_emptyButtonHolder.transform.SetParent(transform, false);
+            m_emptyButtonHolder.transform.localPosition = Vector3.zero;
 
             for (int i = 0; i < tableSize.x; i++)
             {
                 for (int j = 0; j < tableSize.y; j++)
                 {
-                    // Create button                    
+                    // Create button
                     var button = Instantiate(m_buttonTypeList[buttonCode[i, j]]);
-                    if (button.Type == AnimalButton.AnimalType.None)
+                    if (button.Type == AnimalType.None)
                     {
-                        button.transform.SetParent(emptyButtonHolder.transform, false);
+                        button.transform.SetParent(m_emptyButtonHolder.transform, false);
                     }
                     else
                     {
-                        button.transform.SetParent(normalButtonHolder.transform, false);
+                        button.transform.SetParent(m_normalButtonHolder.transform, false);
                     }
-                    button.GetComponent<AnimalButton>().m_RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize, 0);
+                    button.GetComponent<AnimalButton>().RectTransform.localPosition = new Vector3(rowStart + i * m_buttonSize, columnStart + j * m_buttonSize, 0);
                     
                     m_table[i, j] = button;
-                    m_table[i, j].x = i;
-                    m_table[i, j].y = j;
+                    m_table[i, j].CoordinateX = i;
+                    m_table[i, j].CoordinateY = j;
                 }
             }
         }
         #endregion
 
         #region Table Execute Progress
-        public List<byte[]> GetAnimalTypeList(AnimalButton.AnimalType targetType)
+        private void RemoveTableData()
         {
-            // Get a list of animal button which has the same type with targetType
+            Destroy(m_emptyButtonHolder);
+            Destroy(m_normalButtonHolder);
+        }
+        private List<Vector2> GetAnimalCoordinate(AnimalType targetType)
+        {            
             var animalList = new List<Vector2>();
             for (int i = 0; i < m_tableSize.x; i++)
             {
@@ -171,6 +187,27 @@ namespace Pikachu
                     }
                 }
             }
+            return animalList;
+        }
+
+        public List<AnimalButton> GetAnimalTypeButtonList(AnimalType targetType)
+        {
+            // Get a list of animal button which has the same type with targetType
+            var animalList = GetAnimalCoordinate(targetType);
+
+            // Translate the animalList into a coordinate array
+            var animalButtons = new List<AnimalButton>();
+            for (int i = 0; i < animalList.Count; i++)
+            {
+                animalButtons.Add(m_table[(int)animalList[i].x, (int)animalList[i].y]);
+            }
+
+            return animalButtons;
+        }
+        public List<byte[]> GetAnimalTypeCoordinateList(AnimalType targetType)
+        {
+            // Get a list of animal button which has the same type with targetType
+            var animalList = GetAnimalCoordinate(targetType);
 
             // Translate the animalList into a coordinate array
             var animalCoordinates = new List<byte[]>();
@@ -181,6 +218,43 @@ namespace Pikachu
 
             return animalCoordinates;
         }
+        public void ShuffleTable()
+        {
+            Debug.LogWarning("Shuffle");
+            var newTable = new byte[(int)m_tableSize.x,(int)m_tableSize.y];
+            var animalAmount = new int[m_buttonTypeList.Length];
+            
+            // Get amount of each type in the table
+            animalAmount[0] = 0;
+            for (int i = 1; i < m_buttonTypeList.Length; i++)
+            {
+                animalAmount[i] = GetAnimalCoordinate((AnimalType)i).Count;
+            }
+
+            // Create a new table data by random the type of AnimalButton that different from None
+            var randomType = 0;
+            for (int i = 0; i < m_tableSize.x; i++)
+            {
+                for (int j = 0; j < m_tableSize.y; j++)
+                {
+                    newTable[i, j] = (byte)m_table[i, j].Type;
+                    if (m_table[i, j].Type != AnimalType.None)
+                    {
+                        do
+                        {
+                            randomType = Random.Range(1, m_buttonTypeList.Length);
+                        } while (animalAmount[randomType] == 0);
+
+                        animalAmount[randomType]--;                        
+                        newTable[i, j] = (byte)randomType;
+                    }
+                }
+            }
+
+            // Create the new table base on the newTable variable data
+            CreateTable(newTable, m_tableSize, false);
+        }
+
         public void OnButtonClicked(AnimalButton choosenObject)
         {
             m_clickAudio.PlayOneShot(m_clickAudio.clip);
@@ -228,22 +302,24 @@ namespace Pikachu
             button.OnHideButton();
         }
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
-        {
+        {            
             if (button1.Type != button2.Type) return false;
-            button1.m_IsObstacle = false; button2.m_IsObstacle = false;
+            if (button1.Type == AnimalType.None || button2.Type == AnimalType.None) return false;
+
+            button1.IsObstacle = false; button2.IsObstacle = false;
 
             // if two pair are on a same column or same row
-            if (button1.x == button2.x)
+            if (button1.CoordinateX == button2.CoordinateX)
             {
-                if (CheckOnColumnX(button1.y, button2.y, button1.x))
+                if (CheckOnColumnX(button1.CoordinateY, button2.CoordinateY, button1.CoordinateX))
                 {
                     DrawLine(button1.transform.localPosition, button2.transform.localPosition);
                     return true;
                 }
             }
-            if (button1.y == button2.y)
+            if (button1.CoordinateY == button2.CoordinateY)
             {
-                if (CheckOnRowY(button1.x, button2.x, button1.y))
+                if (CheckOnRowY(button1.CoordinateX, button2.CoordinateX, button1.CoordinateY))
                 {
                     DrawLine(button1.transform.localPosition, button2.transform.localPosition);
                     return true;
@@ -252,13 +328,13 @@ namespace Pikachu
 
             Vector3 middle1; Vector3 middle2;
             // Check with Rectangle
-            if (CheckOnRectHorizontal(new Point(button1.x, button1.y), new Point(button2.x, button2.y), out middle1, out middle2))
+            if (CheckOnRectHorizontal(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
 
-            if (CheckOnRectVertical(new Point(button1.x, button1.y), new Point(button2.x, button2.y), out middle1, out middle2))
+            if (CheckOnRectVertical(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
@@ -266,29 +342,29 @@ namespace Pikachu
 
             // Expandation Check
             // Horizontal
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1, out middle1, out middle2))
+            if (CheckOnHorizontalExpand(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), 1, out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
-            if (CheckOnHorizontalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1, out middle1, out middle2))
+            if (CheckOnHorizontalExpand(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), -1, out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
             // Vertical
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), 1, out middle1, out middle2))
+            if (CheckOnVerticalExpand(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), 1, out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
-            if (CheckOnVerticalExpand(new Point(button1.x, button1.y), new Point(button2.x, button2.y), -1, out middle1, out middle2))
+            if (CheckOnVerticalExpand(new Point(button1.CoordinateX, button1.CoordinateY), new Point(button2.CoordinateX, button2.CoordinateY), -1, out middle1, out middle2))
             {
                 DrawLine_U(button1.transform.localPosition, middle1, middle2, button2.transform.localPosition);
                 return true;
             }
 
-            button1.m_IsObstacle = true; button2.m_IsObstacle = true;
+            button1.IsObstacle = true; button2.IsObstacle = true;
             return false;
         }
         #endregion
@@ -329,7 +405,7 @@ namespace Pikachu
             for (int y = start; y <= end; y++)
             {
                 // Has object between y1 and y2 on the line x
-                if (m_table[x, y].m_IsObstacle)
+                if (m_table[x, y].IsObstacle)
                 {
                     Debug.Log("[Pikachu Algorithm][CheckOnColumnX] " + y1 + " ->" + y2 + " on column " + x + " is BLOCK!");
                     return false;
@@ -346,7 +422,7 @@ namespace Pikachu
             for (int x = start; x <= end; x++)
             {
                 // Has object between y1 and y2 on the line x
-                if (m_table[x, y].m_IsObstacle)
+                if (m_table[x, y].IsObstacle)
                 {
                     Debug.Log("[Pikachu Algorithm][CheckOnRowY] " + x1 + " ->" + x2 + " on row " + y + " is BLOCK!");
                     return false;
@@ -470,7 +546,7 @@ namespace Pikachu
             {
                 // while <a> and <b> is not obstacles
                 // while we are moving the column from end.x to further, we also guarantee that the line <3> is exist
-                while (!m_table[column, startPoint.y].m_IsObstacle && !m_table[column, endPoint.y].m_IsObstacle)
+                while (!m_table[column, startPoint.y].IsObstacle && !m_table[column, endPoint.y].IsObstacle)
                 {
                     // Check if line <2> exist
                     if (CheckOnColumnX(startPoint.y, endPoint.y, column))
@@ -529,7 +605,7 @@ namespace Pikachu
             {
                 // while <a> and <b> is not obstacles
                 // while we are moving the column from end.x to further, we also guarantee that the line <3> is exist
-                while (!m_table[startPoint.x, row].m_IsObstacle && !m_table[endPoint.x, row].m_IsObstacle)
+                while (!m_table[startPoint.x, row].IsObstacle && !m_table[endPoint.x, row].IsObstacle)
                 {
                     // Check if line <2> exist
                     if (CheckOnRowY(startPoint.x, endPoint.x, row))
