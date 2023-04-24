@@ -27,7 +27,7 @@ namespace UI
 
         }
 
-        public void RoomSetup(bool isHost, Action callbacks)
+        public void RoomSetup(bool isHost, Action callbacks = null)
         {
             if (isHost)
             {

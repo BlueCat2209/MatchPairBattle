@@ -94,9 +94,7 @@ namespace ElementSkill
                     targetTypeButtons[i].IsObstacle = true;
                     targetTypeButtons[i].Image.sprite = m_skillImage.sprite;
                     targetTypeButtons[i].Image.color = new Color(1, 1, 1, 1);
-                    targetTypeButtons[i].GetComponent<Button>().interactable = true;
-
-                    Debug.LogWarning(targetTypeButtons[i].Image.sprite + "|" + targetTypeButtons[i].Image.color.a);
+                    targetTypeButtons[i].GetComponent<Button>().interactable = true;                    
                 }            
             }
         }

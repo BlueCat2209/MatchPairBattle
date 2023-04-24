@@ -91,5 +91,16 @@ namespace UI
             m_joinRoomPanel.SetActive(false);
             m_createRoomPanel.SetActive(false);            
         }
+        public override void HideScreen()
+        {
+            base.HideScreen();
+
+            m_backButton.SetActive(false);
+            m_joinRoomPanel.SetActive(false);
+            m_createRoomPanel.SetActive(false);
+
+            m_createRoomNameInput.text = "";
+            m_joinRoomNameInput.text = "";
+        }
     }
 }

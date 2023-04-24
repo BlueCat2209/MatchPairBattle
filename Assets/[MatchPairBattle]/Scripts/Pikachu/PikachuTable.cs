@@ -8,8 +8,7 @@ namespace Pikachu
     {
         [Header("Matrix Properties")]        
         [SerializeField] AnimalButton[] m_buttonTypeList;
-        [SerializeField] Vector2 m_tableSize;
-        [SerializeField] TMPro.TextMeshProUGUI m_buttonAmountText;
+        [SerializeField] Vector2 m_tableSize;        
         public AnimalButton[,] m_table;
 
         public AnimalButton[,] Table => m_table;
@@ -50,8 +49,7 @@ namespace Pikachu
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 ShuffleTable();
-            }
-            m_buttonAmountText.text = m_buttonAmount.ToString();
+            }            
         }
         #region Table Creator        
         [ContextMenu("Create table")]

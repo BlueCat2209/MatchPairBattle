@@ -3,16 +3,17 @@ using System.Collections.Generic;
 
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.U2D.Animation;
+using UnityEngine.SceneManagement;
 
+using TMPro;
 using Pikachu;
 using Network;
+using ElementSkill;
 
 using Photon.Pun;
 using Photon.Realtime;
 using ExitGames.Client.Photon;
-using TMPro;
-using ElementSkill;
-using UnityEngine.U2D.Animation;
 
 public class GameManagement : MonoBehaviour
 {
@@ -20,9 +21,13 @@ public class GameManagement : MonoBehaviour
     public static GameManagement Instance => m_instance;
 
     [Header("BASIC PROPERTIES")]
+    
     [Header("Table Properties")]
+    [SerializeField] CanvasGroup m_playerPanel;
     [SerializeField] PikachuTable m_playerTable;
-    [SerializeField] PikachuTable m_opponentTable;
+
+    [SerializeField] CanvasGroup m_opponentPanel;
+    [SerializeField] PikachuTable m_opponentTable;        
     public PikachuTable PlayerTable => m_playerTable;
     public PikachuTable OpponentTable => m_opponentTable;
 
@@ -38,42 +43,12 @@ public class GameManagement : MonoBehaviour
     private float m_currentTime;
     [Space]
 
-    [Header("UI PROPERTIES")]
-    [SerializeField] CanvasGroup m_playerPanel;            
-    [SerializeField] CanvasGroup m_opponentPanel;
-    [Space]
-    [SerializeField] Canvas m_endGameCanvas;
-    [SerializeField] TextMeshProUGUI m_textScore;
-    [SerializeField] TextMeshProUGUI m_textResult;
-    [Space]
-
-    [Header("ELEMENTS PROPERTIES")]    
-    [SerializeField] int m_stackAmount;    
-
-    [Header("Fire")]
-    [SerializeField] Image m_fireImage;
-    [SerializeField] Button m_fireButton;
-    [SerializeField] GameObject m_fireRainPrefab;
-
-    [Header("Ice")]
-    [SerializeField] Image m_iceImage;
-    [SerializeField] Button m_iceButton;
-    [SerializeField] GameObject m_iceFreezePrefab;
-
-    [Header("Wood")]
-    [SerializeField] Image m_woodImage;
-    [SerializeField] Button m_woodButton;
-    [SerializeField] GameObject m_woodExplosionPrefab;
-
-    [Header("Earth")]
-    [SerializeField] Image m_earthImage;
-    [SerializeField] Button m_earthButton;
-    [SerializeField] GameObject m_earthquakePrefab;
-
-    [Header("Air")]
-    [SerializeField] Image m_airImage;
-    [SerializeField] Button m_airButton;
-    [SerializeField] GameObject m_tornadoPrefab;
+    [Header("ELEMENTS PROPERTIES")]
+    [SerializeField] ButtonSkill m_fireButtonSkill;
+    [SerializeField] ButtonSkill m_iceButtonSkill;
+    [SerializeField] ButtonSkill m_woodButtonSkill;
+    [SerializeField] ButtonSkill m_earthButtonSkill;
+    [SerializeField] ButtonSkill m_airButtonSkill;
     [Space]
 
     [SerializeField] GameStatus m_currentStatus = GameStatus.INITIALIZING;
@@ -92,11 +67,10 @@ public class GameManagement : MonoBehaviour
         }
     }
     private void Start()
-    {
-        m_playerTable.CreatePlayerTable();
+    {        
     }
     private void Update()
-    {       
+    {
         if (m_currentStatus != GameStatus.PLAYING) return;
 
         if (m_currentTime < m_targetTime)
@@ -105,24 +79,31 @@ public class GameManagement : MonoBehaviour
             m_countDownImage.fillAmount = 1f - m_currentTime / m_targetTime;
             m_countDownImage.color = m_gradientColor.Evaluate(m_currentTime / m_targetTime);
 
-            if (m_playerTable.IsTableEmpty) SetGameFinish(GameStatus.VICTORY);
-            if (m_opponentTable.IsTableEmpty) SetGameFinish(GameStatus.DEFEATED);
+            if (m_playerTable.IsTableEmpty)
+            {
+                SetGameFinishUI(GameStatus.VICTORY);
+                SendPlayerResult(GameStatus.VICTORY);
+            }
         }
         else
         {
+            if (!PhotonNetwork.IsMasterClient) return;
+
             if (m_playerTable.CurrentButtonAmount < m_opponentTable.CurrentButtonAmount)
             {
-                SetGameFinish(GameStatus.VICTORY);
+                SetGameFinishUI(GameStatus.VICTORY);
+                SendPlayerResult(GameStatus.VICTORY);
+            }
+            else if (m_playerTable.CurrentButtonAmount > m_opponentTable.CurrentButtonAmount)
+            {
+                SetGameFinishUI(GameStatus.DEFEATED);
+                SendPlayerResult(GameStatus.DEFEATED);
             }
             else
-            if (m_playerTable.CurrentButtonAmount > m_opponentTable.CurrentButtonAmount)
             {
-                SetGameFinish(GameStatus.DEFEATED);
+                SetGameFinishUI(GameStatus.DRAW);
+                SendPlayerResult(GameStatus.DRAW);
             }
-            else
-            {
-                SetGameFinish(GameStatus.DRAW);
-            }            
         }    
     }
     #endregion
@@ -143,6 +124,25 @@ public class GameManagement : MonoBehaviour
                 break;
             case PhotonEventCode.TransferSkill:
                 SetOpponentSkill(data);
+                break;
+            case PhotonEventCode.EndGame:
+                SetPlayerResult(data);
+                break;
+        }
+    }
+    protected virtual void SetPlayerResult(object[] data)
+    {
+        byte resultCode = (byte)data[0];
+        switch ((GameStatus)resultCode)
+        {
+            case GameStatus.VICTORY:
+                SetGameFinishUI(GameStatus.DEFEATED);
+                break;
+            case GameStatus.DRAW:
+                SetGameFinishUI(GameStatus.DRAW);
+                break;
+            case GameStatus.DEFEATED:
+                SetGameFinishUI(GameStatus.VICTORY);
                 break;
         }
     }
@@ -168,7 +168,16 @@ public class GameManagement : MonoBehaviour
 
         // Create table from extracted data        
         m_opponentTable.CreateTable(tableData, tableSize);
-        m_currentStatus = GameStatus.PLAYING;
+        if (PhotonManager.Instance.IsHost)
+        {
+            PhotonManager.Instance.LoadingForStartGame(3f, () => { m_currentStatus = GameStatus.PLAYING; });
+        }
+        else
+        {
+            m_playerTable.CreatePlayerTable();
+            PhotonManager.Instance.LoadingForStartGame(3f, () => { m_currentStatus = GameStatus.PLAYING; });
+        }
+        
     }
     protected virtual void SetOpponentPairData(object[] data)
     {        
@@ -239,6 +248,22 @@ public class GameManagement : MonoBehaviour
         }
     }
 
+    public void SendPlayerResult(GameStatus finalStatus)
+    {
+        // Set current client game's status into END
+        m_currentStatus = finalStatus;
+        object[] dataSend = new object[] { (byte)m_currentStatus };
+        
+        // Select other client to receive this event
+        RaiseEventOptions targetOptions = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
+
+        // Transfer data
+        PhotonNetwork.RaiseEvent(
+            (byte) PhotonEventCode.EndGame,
+            dataSend,
+            targetOptions,
+            SendOptions.SendUnreliable);
+    }
     public void SendPlayerSkill(byte skillCode, object includedData = null)
     {
         // Package data
@@ -355,69 +380,69 @@ public class GameManagement : MonoBehaviour
     }
     #endregion
 
+    #region Game Process
     private void CalculatePlayerSkill(AnimalType type)
     {
         switch (type)
         {
             case AnimalType.Fire:
-                m_fireButton.interactable = (m_fireImage.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
-                m_fireImage.fillAmount += 1f / m_stackAmount;
+                m_fireButtonSkill.StackSkill();
                 break;
             case AnimalType.Ice:
-                m_iceButton.interactable = (m_iceImage.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
-                m_iceImage.fillAmount += 1f / m_stackAmount;
+                m_iceButtonSkill.StackSkill();
                 break;
             case AnimalType.Earth:
-                m_earthButton.interactable = (m_earthImage.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
-                m_earthImage.fillAmount += 1f / m_stackAmount;
+                m_earthButtonSkill.StackSkill();
                 break;
             case AnimalType.Wood:
-                m_woodButton.interactable = (m_woodImage.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
-                m_woodImage.fillAmount += 1f / m_stackAmount;
+                m_woodButtonSkill.StackSkill();
                 break;
             case AnimalType.Air:
-                m_airButton.interactable = (m_airImage.fillAmount + 1f / m_stackAmount >= 1f) ? true : false;
-                m_airImage.fillAmount += 1f / m_stackAmount;
+                m_airButtonSkill.StackSkill();
                 break;
         }        
     }
-    private void SetGameFinish(GameStatus gameResult)
-    {
-        m_currentStatus = gameResult;
+    private void SetGameFinishUI(GameStatus gameResult)
+    {        
         switch (gameResult)
         {
             case GameStatus.VICTORY:
                 {
-                    m_endGameCanvas.gameObject.SetActive(true);
-                    m_textScore.text = "Score: " + FinalPoint;
-                    m_textResult.text = "VICTORY";                    
+                    PhotonManager.Instance.LoadingForEndGame("VICTORY");
                 }
             break;
 
             case GameStatus.DEFEATED:
                 {
-                    m_endGameCanvas.gameObject.SetActive(true);
-                    m_textScore.text = "Score: " + FinalPoint;
-                    m_textResult.text = "DEFEATED";                    
+                    PhotonManager.Instance.LoadingForEndGame("DEFEATED");
                 }
             break;
 
             case GameStatus.DRAW:
                 {
-                    m_endGameCanvas.gameObject.SetActive(true);
-                    m_textScore.text = "Score: " + FinalPoint;
-                    m_textResult.text = "DRAW";                    
+                    PhotonManager.Instance.LoadingForEndGame("DRAW");
                 }
                 break;
         }
     }
 
-    #region Cast Skills
-    public void CastFireSkill()
+    public void StartGame()
     {
-        m_fireImage.fillAmount = 0;
-        m_fireButton.interactable = false;        
+        m_playerTable.CreatePlayerTable();
+    }
+    #endregion
 
+    #region Cast Skills
+    private void DelayForAllSkill(float m_skillDelay)
+    {
+        m_fireButtonSkill.DelayForSkill(m_skillDelay);
+        m_iceButtonSkill.DelayForSkill(m_skillDelay);
+        m_woodButtonSkill.DelayForSkill(m_skillDelay);
+        m_earthButtonSkill.DelayForSkill(m_skillDelay);
+        m_airButtonSkill.DelayForSkill(m_skillDelay);
+    }
+    private void CastFireSkill()
+    {     
         var targetButtonsType = new List<byte[]>();
         for (int i = 1; i <= 6; i++)
         {
@@ -427,28 +452,22 @@ public class GameManagement : MonoBehaviour
                 targetButtonsType = currentButtonsType;
             }
         }
-        var skill = Instantiate(m_fireRainPrefab, m_playerTable.transform, false);
+        var skill = Instantiate(m_fireButtonSkill.SkillPrefab, m_playerTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
 
         SendPlayerSkill((int)SkillType.Fire, targetButtonsType);
         
         skill.GetComponent<Fire>().StartSkill(targetButtonsType, m_playerAvatar.position);
     }
-    public void CastIceSkill()
+    private void CastIceSkill()
     {
-        m_iceImage.fillAmount = 0;
-        m_iceButton.interactable = false;
-
-        var skill = Instantiate(m_iceFreezePrefab, m_opponentTable.transform);
+        var skill = Instantiate(m_iceButtonSkill.SkillPrefab, m_opponentTable.transform);
 
         SendPlayerSkill((int)SkillType.Ice);
         skill.GetComponent<Ice>().StartSkill();
     }
-    public void CastWoodSkill()
+    private void CastWoodSkill()
     {
-        m_woodImage.fillAmount = 0;
-        m_woodButton.interactable = false;
-
         var targetButtonsType = new List<byte[]>();
         for (int i = 1; i <= 6; i++)
         {
@@ -460,40 +479,57 @@ public class GameManagement : MonoBehaviour
         }
 
         //var skill = Instantiate(m_woodExplosionPrefab, m_playerTable.transform, false);
-        var skill = Instantiate(m_woodExplosionPrefab, m_opponentTable.transform, false);
+        var skill = Instantiate(m_woodButtonSkill.SkillPrefab, m_opponentTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
 
         SendPlayerSkill((int)SkillType.Wood, targetButtonsType);
         skill.GetComponent<Wood>().StartSkill(targetButtonsType, m_playerAvatar.transform.position);
     }
-    public void CastEarthSkill()
+    private void CastEarthSkill()
     {
-        m_earthImage.fillAmount = 0;
-        m_earthButton.interactable = false;
-
         var skillTargets = m_opponentTable.GetAnimalTypeButtonList(AnimalType.None);
-        var skill = Instantiate(m_earthquakePrefab, m_opponentTable.transform, false);
+        var skill = Instantiate(m_earthButtonSkill.SkillPrefab, m_opponentTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
 
         SendPlayerSkill((int)SkillType.Earth);
         skill.GetComponent<Earth>().StartSkill(skillTargets, m_opponentTable.TableSize);
     }
-    public void CastAirSkill()
+    private void CastAirSkill()
     {
-        m_airImage.fillAmount = 0;
-        m_airButton.interactable = false;
-
-        var skill = Instantiate(m_tornadoPrefab, m_opponentTable.transform, false);
+        var skill = Instantiate(m_airButtonSkill.SkillPrefab, m_opponentTable.transform, false);
         var skillStartPosition = m_opponentTable.transform.InverseTransformPoint(m_playerAvatar.position);
 
         skill.GetComponent<Air>().StartSkillToOpponent(skillStartPosition);
+    }
+
+    public void CastSkill(SkillType skillCode, float delayTime)
+    {
+        switch (skillCode)
+        {
+            case SkillType.Fire:
+                CastFireSkill();
+                break;
+            case SkillType.Ice:
+                CastIceSkill();
+                break;
+            case SkillType.Wood:
+                CastWoodSkill();
+                break;
+            case SkillType.Earth:
+                CastEarthSkill();
+                break;
+            case SkillType.Air:
+                CastAirSkill();
+                break;
+        }
+        DelayForAllSkill(delayTime);
     }
     #endregion
 
     #region Hit Skills
     public void HitFireSkill(List<byte[]> buttonTargets)
     {        
-        var skill = Instantiate(m_fireRainPrefab, m_opponentTable.transform);        
+        var skill = Instantiate(m_fireButtonSkill.SkillPrefab, m_opponentTable.transform);        
         skill.GetComponent<Fire>().StartSkill
         (
             skillTargets: buttonTargets, 
@@ -503,12 +539,12 @@ public class GameManagement : MonoBehaviour
     }
     public void HitIceSkill()
     {
-        var skill = Instantiate(m_iceFreezePrefab, m_playerTable.transform);
+        var skill = Instantiate(m_iceButtonSkill.SkillPrefab, m_playerTable.transform);
         skill.GetComponent<Ice>().StartSkill();
     }
     public void HitWoodSkill(List<byte[]> buttonTargets)
     {
-        var skill = Instantiate(m_woodExplosionPrefab, m_playerTable.transform, false);
+        var skill = Instantiate(m_woodButtonSkill.SkillPrefab, m_playerTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
         skill.GetComponent<Wood>().StartSkill
         (
@@ -520,7 +556,7 @@ public class GameManagement : MonoBehaviour
     public void HitEarthSkill()
     {
         var skillTargets = m_playerTable.GetAnimalTypeButtonList(AnimalType.None);
-        var skill = Instantiate(m_earthquakePrefab, m_playerTable.transform, false);
+        var skill = Instantiate(m_earthButtonSkill.SkillPrefab, m_playerTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
         
         skill.GetComponent<Earth>().StartSkill(skillTargets, m_playerTable.TableSize);
@@ -529,34 +565,34 @@ public class GameManagement : MonoBehaviour
     {
         // Delay player to use skill
 
-        var firePosition = m_fireButton.transform.localPosition;
-        var delayOnFire = Instantiate(m_tornadoPrefab, m_fireButton.transform.parent);
+        var firePosition = m_fireButtonSkill.transform.localPosition;
+        var delayOnFire = Instantiate(m_airButtonSkill.SkillPrefab, m_fireButtonSkill.transform.parent);
         delayOnFire.transform.localPosition = new Vector3(firePosition.x, firePosition.z, -10);
         Destroy(delayOnFire, 3f);
 
-        var icePosition = m_iceButton.transform.localPosition;
-        var delayOnIce = Instantiate(m_tornadoPrefab, m_iceButton.transform.parent);        
+        var icePosition = m_iceButtonSkill.transform.localPosition;
+        var delayOnIce = Instantiate(m_airButtonSkill.SkillPrefab, m_iceButtonSkill.transform.parent);        
         delayOnIce.transform.localPosition = new Vector3(icePosition.x, icePosition.y, -10);
         Destroy(delayOnIce, 3f);
 
-        var woodPosition = m_woodButton.transform.localPosition;
-        var delayOnWood = Instantiate(m_tornadoPrefab, m_woodButton.transform.parent);
+        var woodPosition = m_woodButtonSkill.transform.localPosition;
+        var delayOnWood = Instantiate(m_airButtonSkill.SkillPrefab, m_woodButtonSkill.transform.parent);
         delayOnWood.transform.localPosition = new Vector3(woodPosition.x, woodPosition.z, -10);
         Destroy(delayOnWood, 3f);
 
-        var earthPosition = m_earthButton.transform.localPosition;
-        var delayOnEarth = Instantiate(m_tornadoPrefab, m_earthButton.transform.parent);
+        var earthPosition = m_earthButtonSkill.transform.localPosition;
+        var delayOnEarth = Instantiate(m_airButtonSkill.SkillPrefab, m_earthButtonSkill.transform.parent);
         delayOnEarth.transform.localPosition = new Vector3(earthPosition.x, earthPosition.z, -10);
         Destroy(delayOnEarth, 3f);
 
-        var airPosition = m_airButton.transform.localPosition;
-        var delayOnAir = Instantiate(m_tornadoPrefab, m_airButton.transform.parent);
+        var airPosition = m_airButtonSkill.transform.localPosition;
+        var delayOnAir = Instantiate(m_airButtonSkill.SkillPrefab, m_airButtonSkill.transform.parent);
         delayOnAir.transform.localPosition = new Vector3(airPosition.x, airPosition.z, -10);
         Destroy(delayOnAir, 3f);
 
 
         // Create a tornado to shuffle the player's table
-        var skill = Instantiate(m_tornadoPrefab, m_playerTable.transform, false);
+        var skill = Instantiate(m_airButtonSkill.SkillPrefab, m_playerTable.transform, false);
         var skillStartPosition = m_playerTable.transform.InverseTransformPoint(m_opponentTable.transform.position);                
         
         skill.GetComponent<Air>().StartSkillToPlayer(skillStartPosition, tableData, tableSize);                
