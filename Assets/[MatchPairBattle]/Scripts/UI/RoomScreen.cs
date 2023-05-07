@@ -13,7 +13,6 @@ namespace UI
         [SerializeField] Image m_opponentPanel;
         [SerializeField] TMPro.TextMeshProUGUI m_opponentName;
         [SerializeField] Button m_startGameButton;
-
         
         // Start is called before the first frame update
         void Start()
@@ -27,7 +26,7 @@ namespace UI
 
         }
 
-        public void RoomSetup(bool isHost, Action callbacks)
+        public void RoomSetup(bool isHost, Action callbacks = null)
         {
             if (isHost)
             {
@@ -45,10 +44,14 @@ namespace UI
         {
             m_opponentName.text = name;
         }
+        public void ResetRoom()
+        {
+            m_opponentName.text = "Waiting for opponent...";
+        }
         public void SetOpponentReady()
         {
             m_startGameButton.interactable = true;
-            m_startGameButton.GetComponent<Image>().color = Color.green;
+            m_opponentPanel.GetComponent<Image>().color = Color.green;
         }
         public void OnStartGameButtonPressed()
         {

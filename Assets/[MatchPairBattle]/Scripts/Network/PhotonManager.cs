@@ -20,7 +20,8 @@ namespace Network
         [SerializeField] LoginScreen m_loginScreen;
         [SerializeField] LobbyScreen m_lobbyScreen;
         [SerializeField] RoomScreen m_roomScreen;
-        [SerializeField] UIScreen m_loadingScreen;
+        [SerializeField] EndGameScreen m_endGameScreen;
+        [SerializeField] LoadingScreen m_loadingScreen;
 
         public override void OnEnable()
         {
@@ -42,8 +43,12 @@ namespace Network
         }
         // Start is called before the first frame update
         void Start()
-        {            
-            m_loginScreen.ShowScreen();
+        {
+            if (!PhotonNetwork.IsConnected)
+            {
+                m_loginScreen.ShowScreen();
+            }
+
         }
 
         // Update is called once per frame
@@ -103,7 +108,6 @@ namespace Network
 
                     // Use data received
                     m_roomScreen.SetOpponnetName(memberName);
-                    m_roomScreen.SetOpponentReady();
                     break;
 
                 case (byte)PhotonEventCode.SetClientReady:
@@ -150,7 +154,7 @@ namespace Network
             object[] dataSend = new object[] { true };
 
             // Select only master client receive this data
-            RaiseEventOptions targetOption = new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient };
+            RaiseEventOptions targetOption = new RaiseEventOptions { Receivers = ReceiverGroup.Others };
 
             PhotonNetwork.RaiseEvent(
                 (byte)PhotonEventCode.SetClientReady,
@@ -161,7 +165,10 @@ namespace Network
         }
         private void SendHostStartGame()
         {
-            PhotonNetwork.LoadLevel("Game");
+            HideAllUIScreen();
+            m_loadingScreen.ShowScreen();
+
+            GameManagement.Instance.StartGame();
         }
         
         public void SendEventForRoomData()
@@ -180,6 +187,7 @@ namespace Network
         #region LOADING SCREEN
         private void HideAllUIScreen()
         {
+            m_endGameScreen.HideScreen();
             m_loadingScreen.HideScreen();
             m_lobbyScreen.HideScreen();
             m_loginScreen.HideScreen();
@@ -188,7 +196,7 @@ namespace Network
         public void LoadingForLogin(string playerName)
         {
             HideAllUIScreen();
-            m_loadingScreen.ShowScreen();
+            m_loadingScreen.StartLoading();
             
             PhotonNetwork.LocalPlayer.NickName = playerName;
             PhotonNetwork.AutomaticallySyncScene = true;    
@@ -198,21 +206,34 @@ namespace Network
         public void LoadingForJoinRoom(string roomName)
         {
             HideAllUIScreen();
-            m_loadingScreen.ShowScreen();
+            m_roomScreen.ResetRoom();
+            m_loadingScreen.StartLoading();            
 
             PhotonNetwork.JoinRoom(roomName);
         }
         public void LoadingForCreateRoom(string roomName, RoomOptions roomSettings)
         {
             HideAllUIScreen();
-            m_loadingScreen.ShowScreen();
+            m_loadingScreen.StartLoading();
 
             PhotonNetwork.CreateRoom(roomName, roomSettings);
+        }
+        public void LoadingForStartGame(float countDownTime, System.Action callbacks = null)
+        {            
+            HideAllUIScreen();
+            callbacks += HideAllUIScreen;
+            m_loadingScreen.StartCountDown(countDownTime, callbacks);
+        }
+        public void LoadingForEndGame(string resultText)
+        {
+            HideAllUIScreen();
+            m_endGameScreen.ShowScreen();
+            m_endGameScreen.SetResultText(resultText);
         }
         public void LoadingForLeaveRoom()
         {
             HideAllUIScreen();
-            m_loadingScreen.ShowScreen();
+            m_loadingScreen.StartLoading();
 
             PhotonNetwork.LeaveRoom();
         }
@@ -245,7 +266,15 @@ namespace Network
         {
             HideAllUIScreen();
             m_roomScreen.ShowScreen();
-            m_roomScreen.RoomSetup(PhotonNetwork.IsMasterClient, (PhotonNetwork.IsMasterClient) ? null : SendNickNameToMasterClient);
+            if (PhotonNetwork.IsMasterClient)
+            {
+                m_roomScreen.RoomSetup(true);
+            }
+            else
+            {
+                PhotonNetwork.CurrentRoom.IsVisible = false;
+                m_roomScreen.RoomSetup(false, SendNickNameToMasterClient);
+            }            
             Debug.Log(PhotonNetwork.LocalPlayer.NickName + " joined Room: " + PhotonNetwork.CurrentRoom.Name);
         }
         public override void OnJoinRoomFailed(short returnCode, string message)

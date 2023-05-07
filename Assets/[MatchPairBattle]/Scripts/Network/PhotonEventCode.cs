@@ -6,10 +6,11 @@ namespace Network
         NoEvent = 0,
         UpdateClientNameInRoom = 1,
         SetClientReady = 2,
+        EndGame = 3,
 
         // Pikachu Event
-        TransferTableData = 3,
-        TransferPairData = 4,
-        TransferSkill = 5,
+        TransferTableData = 4,
+        TransferPairData = 5,
+        TransferSkill = 6,
     }
 }

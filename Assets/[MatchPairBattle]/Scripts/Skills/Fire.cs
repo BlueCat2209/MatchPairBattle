@@ -22,16 +22,17 @@ namespace ElementSkill
             int countDown = 0;
             for (int i = 0; i < m_fireAmount; i++)
             {
-                if (Vector3.Distance(m_fireBallTransform[i].position, m_fireBallTarget[i]) > 0.1f)
+                if (Vector3.Distance(m_fireBallTransform[i].localPosition, m_fireBallTarget[i]) > 0.1f)
                 {
-                    m_fireBallTransform[i].position = Vector3.MoveTowards(m_fireBallTransform[i].position, m_fireBallTarget[i], m_speed * Time.deltaTime);
+                    m_fireBallTransform[i].localPosition = Vector3.MoveTowards(m_fireBallTransform[i].localPosition, m_fireBallTarget[i], m_speed * Time.deltaTime);
+                    m_fireBallTransform[i].up = (m_fireBallTransform[i].localPosition - m_fireBallTarget[i]);
                 }
                 else
                 {
                     countDown++;
-                    m_fireBallTransform[i].position = m_fireBallTarget[i];
+                    m_fireBallTransform[i].localPosition = m_fireBallTarget[i];
                 }
-            }            
+            }
             if (countDown == m_fireAmount)
             {
                 m_isCasting = false;
@@ -55,7 +56,7 @@ namespace ElementSkill
                 // Get fireBallTarget information
                 var animalButton = m_targetTable.Table[skillTargets[i][0], skillTargets[i][1]];
                 m_animalButtons.Add(animalButton);
-                m_fireBallTarget.Add(animalButton.transform.position);
+                m_fireBallTarget.Add(new Vector3(animalButton.transform.localPosition.x, animalButton.transform.localPosition.y, -10));
 
                 // Create fireball
                 var skill = Instantiate(m_firePrefab, transform);
