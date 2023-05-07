@@ -206,7 +206,8 @@ namespace Network
         public void LoadingForJoinRoom(string roomName)
         {
             HideAllUIScreen();
-            m_loadingScreen.StartLoading();
+            m_roomScreen.ResetRoom();
+            m_loadingScreen.StartLoading();            
 
             PhotonNetwork.JoinRoom(roomName);
         }

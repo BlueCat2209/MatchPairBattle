@@ -431,6 +431,11 @@ public class GameManagement : MonoBehaviour
     {
         m_playerTable.CreatePlayerTable();
     }
+    public void RestartGame()
+    {
+        m_currentTime = 0;
+        m_currentStatus = GameStatus.INITIALIZING;
+    }
     #endregion
 
     #region Cast Skills

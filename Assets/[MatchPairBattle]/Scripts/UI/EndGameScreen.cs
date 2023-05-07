@@ -27,6 +27,7 @@ namespace UI
         }
         public void OnReplayButtonPressed()
         {
+            GameManagement.Instance.RestartGame();
             Network.PhotonManager.Instance.LoadingForLeaveRoom();
         }
     }
