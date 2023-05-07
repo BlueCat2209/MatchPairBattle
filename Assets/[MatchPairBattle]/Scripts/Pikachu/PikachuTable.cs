@@ -55,6 +55,8 @@ namespace Pikachu
         [ContextMenu("Create table")]
         public void CreatePlayerTable()
         {
+            RemoveTableData();
+
             int row = (int) m_tableSize.x;
             int column = (int)m_tableSize.y;
 
