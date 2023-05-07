@@ -32,8 +32,8 @@ public class GameManagement : MonoBehaviour
     public PikachuTable OpponentTable => m_opponentTable;
 
     [Header("Avatar Properties")]
-    [SerializeField] Transform m_playerAvatar;
-    [SerializeField] public Animator m_animator;
+    [SerializeField] Transform m_avatarTransform;
+    [SerializeField] public Animator m_avatarAnimator;
     [SerializeField] public SpriteLibrary m_spriteLibrary;
 
     [Header("PlayTime Properties")]
@@ -197,6 +197,7 @@ public class GameManagement : MonoBehaviour
         byte skillCode = (byte)data[0];
 
         // Process data
+        m_avatarAnimator.SetTrigger("Hit");
         switch ((SkillType)skillCode)
         {
             case SkillType.Fire:
@@ -457,7 +458,7 @@ public class GameManagement : MonoBehaviour
 
         SendPlayerSkill((int)SkillType.Fire, targetButtonsType);
         
-        skill.GetComponent<Fire>().StartSkill(targetButtonsType, m_playerAvatar.position);
+        skill.GetComponent<Fire>().StartSkill(targetButtonsType, m_avatarTransform.position);
     }
     private void CastIceSkill()
     {
@@ -483,7 +484,7 @@ public class GameManagement : MonoBehaviour
         skill.transform.localPosition = Vector3.zero;
 
         SendPlayerSkill((int)SkillType.Wood, targetButtonsType);
-        skill.GetComponent<Wood>().StartSkill(targetButtonsType, m_playerAvatar.transform.position);
+        skill.GetComponent<Wood>().StartSkill(targetButtonsType, m_avatarTransform.transform.position);
     }
     private void CastEarthSkill()
     {
@@ -497,13 +498,14 @@ public class GameManagement : MonoBehaviour
     private void CastAirSkill()
     {
         var skill = Instantiate(m_airButtonSkill.SkillPrefab, m_opponentTable.transform, false);
-        var skillStartPosition = m_opponentTable.transform.InverseTransformPoint(m_playerAvatar.position);
+        var skillStartPosition = m_opponentTable.transform.InverseTransformPoint(m_avatarTransform.position);
 
         skill.GetComponent<Air>().StartSkillToOpponent(skillStartPosition);
     }
 
     public void CastSkill(SkillType skillCode, float delayTime)
     {
+        m_avatarAnimator.SetTrigger("Cast");
         switch (skillCode)
         {
             case SkillType.Fire:
