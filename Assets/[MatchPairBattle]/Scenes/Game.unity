@@ -1226,8 +1226,8 @@ MonoBehaviour:
   m_playerTable: {fileID: 1683186416}
   m_opponentPanel: {fileID: 1862854671}
   m_opponentTable: {fileID: 1862854672}
-  m_playerAvatar: {fileID: 2026679783}
-  m_animator: {fileID: 2026679782}
+  m_avatarTransform: {fileID: 2026679783}
+  m_avatarAnimator: {fileID: 2026679782}
   m_spriteLibrary: {fileID: 2026679779}
   m_targetTime: 300
   m_countDownImage: {fileID: 369525309}
