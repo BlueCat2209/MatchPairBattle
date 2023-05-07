@@ -45,5 +45,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_skillType: 1
-  m_firePrefab: {fileID: 149928, guid: 0b5e7793d4d1e854385c5ce9b1e79f47, type: 3}
-  m_speed: 200
+  m_firePrefab: {fileID: 6438188366068546299, guid: 9ea48a0c49b2a1b409227f886181d8ae, type: 3}
+  m_speed: 2000
