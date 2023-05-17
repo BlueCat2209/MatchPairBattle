@@ -6,6 +6,7 @@ namespace UI
     public class LobbyScreen : UIScreen
     {
         [Header("LOBBY PROPERTIES")]
+        [SerializeField] GameObject m_boardPanel;
         [SerializeField] GameObject m_backButton;
         [Space]
         
@@ -18,6 +19,12 @@ namespace UI
         [SerializeField] GameObject m_joinRoomPanel;
         [SerializeField] Transform m_roomIDHolder;
         [SerializeField] GameObject m_roomIDPrefab;
+
+        [Header("Join Public Room")]
+        [SerializeField] GameObject m_publicRoomPanel;
+
+        [Header("Join Private Room")]
+        [SerializeField] GameObject m_privateRoomPanel;
         [SerializeField] TMPro.TMP_InputField m_joinRoomNameInput;
 
         private List<Photon.Realtime.RoomInfo> m_roomList = new List<Photon.Realtime.RoomInfo>();
@@ -26,6 +33,8 @@ namespace UI
         public void OnCreateRoomButtonPressed()
         {
             m_backButton.SetActive(true);
+            m_boardPanel.SetActive(false);
+
             m_joinRoomPanel.SetActive(false);
             m_createRoomPanel.SetActive(true);
         }
@@ -45,10 +54,22 @@ namespace UI
             m_joinRoomNameInput.text = text;
         }
         public void OnJoinRoomButtonPressed()
-        {
+        {            
             m_backButton.SetActive(true);
+            m_boardPanel.SetActive(false);
+
             m_joinRoomPanel.SetActive(true);
-            m_createRoomPanel.SetActive(false);            
+            m_createRoomPanel.SetActive(false);
+        }
+        public void OnJoinPublicRoomPressed()
+        {
+            m_publicRoomPanel.SetActive(true);
+            m_privateRoomPanel.SetActive(false);
+        }
+        public void OnJoinPrivateRoomPressed()
+        {
+            m_publicRoomPanel.SetActive(false);
+            m_privateRoomPanel.SetActive(true);
         }
         public void JoinRoom()
         {
@@ -88,6 +109,8 @@ namespace UI
         public void OnBackButtonPressed()
         {
             m_backButton.SetActive(false);
+            m_boardPanel.SetActive(true);
+
             m_joinRoomPanel.SetActive(false);
             m_createRoomPanel.SetActive(false);            
         }
