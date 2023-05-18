@@ -520,13 +520,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_panel: {fileID: 7336343257912098910}
+  m_startGameButton: {fileID: 7336343256997858500}
   m_roomID: {fileID: 5584856945999232385}
   m_notificationText: {fileID: 5227432636664474265}
   m_playerAvatar: {fileID: 7594859820730814181}
   m_playerName: {fileID: 2461597452591376826}
   m_opponentAvatar: {fileID: 3122307478857601475}
   m_opponentName: {fileID: 7336343258669201458}
-  m_startGameButton: {fileID: 7336343256997858500}
 --- !u!1 &7336343256997858502
 GameObject:
   m_ObjectHideFlags: 0
@@ -1075,7 +1075,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &7336343257912098911
 RectTransform:
   m_ObjectHideFlags: 0
