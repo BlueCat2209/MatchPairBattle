@@ -9,10 +9,17 @@ namespace UI
     public class RoomScreen : UIScreen
     {
         [Header("ROOM PROPERTiES")]
-        [SerializeField] TMPro.TextMeshProUGUI m_roomID;
-        [SerializeField] Image m_opponentPanel;
-        [SerializeField] TMPro.TextMeshProUGUI m_opponentName;
         [SerializeField] Button m_startGameButton;
+        [SerializeField] TMPro.TextMeshProUGUI m_roomID;
+        [SerializeField] TMPro.TextMeshProUGUI m_notificationText;
+
+        [Header("Player panel")]
+        [SerializeField] Image m_playerAvatar;
+        [SerializeField] TMPro.TextMeshProUGUI m_playerName;
+
+        [Header("Opponent panel")]
+        [SerializeField] Image m_opponentAvatar;
+        [SerializeField] TMPro.TextMeshProUGUI m_opponentName;        
         
         // Start is called before the first frame update
         void Start()
@@ -26,11 +33,11 @@ namespace UI
 
         }
 
-        public void RoomSetup(bool isHost, Action callbacks = null)
-        {
+        public void RoomSetup(bool isHost, string roomID, string playerName, Action callbacks = null)
+        {            
             if (isHost)
             {
-                m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "START";
+                m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "BEGIN";
                 m_startGameButton.interactable = false;
             }
             else
@@ -38,6 +45,8 @@ namespace UI
                 m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "READY";
                 m_startGameButton.interactable = true;
             }
+
+            m_playerName.text = playerName;
             callbacks?.Invoke();
         }
         public void SetOpponnetName(string name)
@@ -46,12 +55,13 @@ namespace UI
         }
         public void ResetRoom()
         {
-            m_opponentName.text = "Waiting for opponent...";
+            m_notificationText.text = "Waiting for opponent...";
+            m_opponentName.text = "???";
         }
         public void SetOpponentReady()
         {
-            m_startGameButton.interactable = true;
-            m_opponentPanel.GetComponent<Image>().color = Color.green;
+            m_notificationText.text = "Let the battle begin!!!";
+            m_startGameButton.interactable = true;            
         }
         public void OnStartGameButtonPressed()
         {
