@@ -38,7 +38,7 @@ namespace UI
             if (isHost)
             {
                 m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "BEGIN";
-                m_startGameButton.interactable = false;                
+                m_startGameButton.interactable = false;
             }
             else
             {

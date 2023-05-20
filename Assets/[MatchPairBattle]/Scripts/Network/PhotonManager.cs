@@ -214,6 +214,7 @@ namespace Network
         public void LoadingForCreateRoom(string roomName, RoomOptions roomSettings)
         {
             HideAllUIScreen();
+            m_roomScreen.ResetRoom();
             m_loadingScreen.StartLoading();
 
             PhotonNetwork.CreateRoom(roomName, roomSettings);
