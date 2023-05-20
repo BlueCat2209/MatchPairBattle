@@ -214,6 +214,7 @@ namespace Network
         public void LoadingForCreateRoom(string roomName, RoomOptions roomSettings)
         {
             HideAllUIScreen();
+            m_roomScreen.ResetRoom();
             m_loadingScreen.StartLoading();
 
             PhotonNetwork.CreateRoom(roomName, roomSettings);
@@ -268,12 +269,12 @@ namespace Network
             m_roomScreen.ShowScreen();
             if (PhotonNetwork.IsMasterClient)
             {
-                m_roomScreen.RoomSetup(true);
+                m_roomScreen.RoomSetup(true, PhotonNetwork.CurrentRoom.Name, PhotonNetwork.LocalPlayer.NickName);
             }
             else
             {
                 PhotonNetwork.CurrentRoom.IsVisible = false;
-                m_roomScreen.RoomSetup(false, SendNickNameToMasterClient);
+                m_roomScreen.RoomSetup(false, PhotonNetwork.CurrentRoom.Name, PhotonNetwork.LocalPlayer.NickName, SendNickNameToMasterClient);
             }            
             Debug.Log(PhotonNetwork.LocalPlayer.NickName + " joined Room: " + PhotonNetwork.CurrentRoom.Name);
         }

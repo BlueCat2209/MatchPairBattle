@@ -44,7 +44,7 @@ namespace Pikachu
             {
                 if (m_image == null)
                 {
-                    m_image = GetComponent<Image>();
+                    m_image = GetComponentInChildren<Image>();
                 }
                 return m_image;
             }

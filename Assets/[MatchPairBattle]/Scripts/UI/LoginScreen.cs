@@ -5,7 +5,8 @@ namespace UI
     public class LoginScreen : UIScreen
     {
         [Header("LOGIN PROPERTIES")]
-        [SerializeField] TMPro.TMP_InputField m_nameInput;        
+        [SerializeField] TMPro.TMP_InputField m_nameInput;
+        [SerializeField] UnityEngine.UI.Slider m_genderSlider;
 
         // Start is called before the first frame update
         void Start()
@@ -21,6 +22,10 @@ namespace UI
         public void OnLoginButtonPressed()
         {            
             Network.PhotonManager.Instance.LoadingForLogin(m_nameInput.text);
+        }
+        public void OnGenderSliderValueChange()
+        {
+
         }
     }
 }

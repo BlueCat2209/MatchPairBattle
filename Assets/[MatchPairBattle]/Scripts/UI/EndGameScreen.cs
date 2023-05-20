@@ -7,7 +7,9 @@ namespace UI
 {
     public class EndGameScreen : UIScreen
     {
-        [SerializeField] TextMeshProUGUI m_resultText;        
+        [SerializeField] TextMeshProUGUI m_resultText;
+        [SerializeField] GameObject m_winPanel;
+        [SerializeField] GameObject m_losePanel;
 
         // Start is called before the first frame update
         void Start()
@@ -23,7 +25,23 @@ namespace UI
 
         public void SetResultText(string resultText)
         {
-            m_resultText.text = resultText;
+            switch (resultText)
+            {
+                case "VICTORY":                    
+                case "DRAW":
+                    {
+                        m_winPanel.SetActive(true);
+                        m_losePanel.SetActive(false);
+                    }
+                    break;
+
+                case "DEFEATED":
+                    {
+                        m_winPanel.SetActive(false);
+                        m_losePanel.SetActive(true);
+                    }
+                    break;               
+            }
         }
         public void OnReplayButtonPressed()
         {

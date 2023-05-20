@@ -56,6 +56,15 @@ namespace ElementSkill
             m_countDownTime = delayTime;
             m_countDownText.gameObject.SetActive(true);
         }
+        public void SkillReset()
+        {
+            m_isDelaying = false;
+            m_countDownTime = 0;
+            m_countDownText.gameObject.SetActive(false);
+
+            m_stackImage.fillAmount = 0;
+            m_skillButton.interactable = false;
+        }
         public void StackSkill()
         {
             m_stackImage.fillAmount += 1f / m_stackAmount;
@@ -63,6 +72,7 @@ namespace ElementSkill
         }
         public void UseSkill()
         {
+            if (m_isDelaying) return;
             GameManagement.Instance.CastSkill(m_skillType, m_skillDelay);
             m_stackImage.fillAmount = 0f;
             m_skillButton.interactable = false;
