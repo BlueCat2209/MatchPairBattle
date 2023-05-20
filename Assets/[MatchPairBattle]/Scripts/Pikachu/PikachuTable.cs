@@ -261,19 +261,19 @@ namespace Pikachu
             if (m_startObject == null)
             {
                 m_startObject = choosenObject;
-                choosenObject.transform.GetChild(0).gameObject.SetActive(true);
+                choosenObject.transform.Find("Choosen").gameObject.SetActive(true);
                 return;
             }
             if (m_startObject == choosenObject)
             {
                 m_startObject = null;
-                choosenObject.transform.GetChild(0).gameObject.SetActive(false);
+                choosenObject.transform.Find("Choosen").gameObject.SetActive(false);
                 return;
             }
             else
             {
                 m_endObject = choosenObject;
-                choosenObject.transform.GetChild(0).gameObject.SetActive(true);
+                choosenObject.transform.Find("Choosen").gameObject.SetActive(true);
             }
 
             if (CheckValidPair(m_startObject, m_endObject))
@@ -283,8 +283,8 @@ namespace Pikachu
             }
 
             // Turn off choosen mode
-            m_startObject.transform.GetChild(0).gameObject.SetActive(false);
-            m_endObject.transform.GetChild(0).gameObject.SetActive(false);
+            m_startObject.transform.Find("Choosen").gameObject.SetActive(false);
+            m_endObject.transform.Find("Choosen").gameObject.SetActive(false);
             
             // Renew object
             m_startObject = null;

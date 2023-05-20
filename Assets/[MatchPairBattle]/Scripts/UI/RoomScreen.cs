@@ -38,14 +38,14 @@ namespace UI
             if (isHost)
             {
                 m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "BEGIN";
-                m_startGameButton.interactable = false;
+                m_startGameButton.interactable = false;                
             }
             else
             {
                 m_startGameButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "READY";
                 m_startGameButton.interactable = true;
             }
-
+            m_roomID.text = Photon.Pun.PhotonNetwork.CurrentRoom.Name;
             m_playerName.text = playerName;
             callbacks?.Invoke();
         }
@@ -61,7 +61,7 @@ namespace UI
         public void SetOpponentReady()
         {
             m_notificationText.text = "Let the battle begin!!!";
-            m_startGameButton.interactable = true;            
+            m_startGameButton.interactable = true;
         }
         public void OnStartGameButtonPressed()
         {

@@ -11,8 +11,10 @@ namespace UI
         [Space]
         
         [Header("Create Room")]
-        [SerializeField] GameObject m_createRoomPanel;        
-        [SerializeField] TMPro.TMP_InputField m_createRoomNameInput;
+        [SerializeField] GameObject m_createRoomPanel;
+        [SerializeField] UnityEngine.UI.Slider m_statusSlider;
+        [SerializeField] TMPro.TextMeshProUGUI m_statusSliderText;
+        [SerializeField] TMPro.TMP_InputField m_createRoomNameInput;        
         [Space]
 
         [Header("Join Room")]
@@ -38,11 +40,23 @@ namespace UI
             m_joinRoomPanel.SetActive(false);
             m_createRoomPanel.SetActive(true);
         }
+        public void OnStatusSliderValueChanged()
+        {
+            if (m_statusSlider.value == 1)
+            {
+                m_statusSliderText.text = "Private";
+            }
+            else
+            {
+                m_statusSliderText.text = "Public";
+            }
+        }
         public void CreateRoom()
         {
             var roomName = m_createRoomNameInput.text;
             var roomSettings = new Photon.Realtime.RoomOptions();
             roomSettings.MaxPlayers = 2;
+            roomSettings.IsVisible = (m_statusSlider.value == 0);
 
             Network.PhotonManager.Instance.LoadingForCreateRoom(roomName, roomSettings);
         }
@@ -71,11 +85,15 @@ namespace UI
             m_publicRoomPanel.SetActive(false);
             m_privateRoomPanel.SetActive(true);
         }
-        public void JoinRoom()
+        public void JoinPrivateRoom()
         {
             var roomName = m_joinRoomNameInput.text;
             Network.PhotonManager.Instance.LoadingForJoinRoom(roomName);
-        }        
+        }
+        public void JoinPublicRoom(string roomName)
+        {
+            Network.PhotonManager.Instance.LoadingForJoinRoom(roomName);
+        }
         public void UpdateRoomListUI(List<Photon.Realtime.RoomInfo> roomInfos)
         {
             // Get roomInfos List
@@ -101,7 +119,7 @@ namespace UI
             {
                 var roomID = Instantiate(m_roomIDPrefab, m_roomIDHolder);
                 roomID.GetComponent<UIRoomID>().RoomID = m_roomList[i].Name;
-                roomID.GetComponent<UIRoomID>().RoomSelectedCallbacks += FillInText;
+                roomID.GetComponent<UIRoomID>().RoomSelectedCallbacks += JoinPublicRoom;
             }
         }
         #endregion
@@ -118,6 +136,7 @@ namespace UI
         {
             base.HideScreen();
 
+            m_boardPanel.SetActive(true);
             m_backButton.SetActive(false);
             m_joinRoomPanel.SetActive(false);
             m_createRoomPanel.SetActive(false);

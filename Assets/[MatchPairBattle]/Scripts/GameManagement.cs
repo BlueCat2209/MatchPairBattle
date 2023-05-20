@@ -76,8 +76,8 @@ public class GameManagement : MonoBehaviour
         if (m_currentTime < m_targetTime)
         {
             m_currentTime += Time.deltaTime;
-            m_countDownImage.fillAmount = 1f - m_currentTime / m_targetTime;
-            m_countDownImage.color = m_gradientColor.Evaluate(m_currentTime / m_targetTime);
+            //m_countDownImage.fillAmount = 1f - m_currentTime / m_targetTime;
+            //m_countDownImage.color = m_gradientColor.Evaluate(m_currentTime / m_targetTime);
 
             if (m_playerTable.IsTableEmpty)
             {
@@ -435,6 +435,12 @@ public class GameManagement : MonoBehaviour
     {
         m_currentTime = 0;
         m_currentStatus = GameStatus.INITIALIZING;
+
+        m_fireButtonSkill.SkillReset();
+        m_iceButtonSkill.SkillReset();
+        m_earthButtonSkill.SkillReset();
+        m_woodButtonSkill.SkillReset();
+        m_airButtonSkill.SkillReset();
     }
     #endregion
 
