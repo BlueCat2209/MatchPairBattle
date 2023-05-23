@@ -8,6 +8,7 @@ namespace UI
         [Header("LOBBY PROPERTIES")]
         [SerializeField] GameObject m_boardPanel;
         [SerializeField] GameObject m_backButton;
+        [SerializeField] GameObject m_tutorialButton;
         [Space]
         
         [Header("Create Room")]
@@ -28,6 +29,12 @@ namespace UI
         [Header("Join Private Room")]
         [SerializeField] GameObject m_privateRoomPanel;
         [SerializeField] TMPro.TMP_InputField m_joinRoomNameInput;
+
+        [Header("Tutorial Panel")]
+        [SerializeField] GameObject m_tutorialPanel;
+        [SerializeField] GameObject m_gameRulesPanel;
+        [SerializeField] GameObject m_skillRulesPanel;
+        [SerializeField] UnityEngine.UI.Slider m_rulesSlider;
 
         private List<Photon.Realtime.RoomInfo> m_roomList = new List<Photon.Realtime.RoomInfo>();
         
@@ -124,14 +131,47 @@ namespace UI
         }
         #endregion
 
+        #region Tutorial
+        public void OnRulesSliderValueChanged(TMPro.TextMeshProUGUI rulesText)
+        {
+            if (m_rulesSlider.value == 0)
+            {
+                rulesText.text = "Game Rules";
+                m_gameRulesPanel.SetActive(true);
+                m_skillRulesPanel.SetActive(false);
+            }
+            else
+            {
+                rulesText.text = "Skill Rules";
+                m_gameRulesPanel.SetActive(false);
+                m_skillRulesPanel.SetActive(true);
+            }
+        }
+        #endregion
+
         public void OnBackButtonPressed()
         {
-            m_backButton.SetActive(false);
             m_boardPanel.SetActive(true);
+            m_backButton.SetActive(false);            
 
             m_joinRoomPanel.SetActive(false);
-            m_createRoomPanel.SetActive(false);            
+            m_createRoomPanel.SetActive(false);
+
+            m_tutorialPanel.SetActive(false);
+            m_tutorialButton.SetActive(true);
         }
+        public void OnTutorialButtonPressed()
+        {            
+            m_boardPanel.SetActive(false);
+            m_backButton.SetActive(true);            
+
+            m_joinRoomPanel.SetActive(false);
+            m_createRoomPanel.SetActive(false);
+            
+            m_tutorialPanel.SetActive(true);
+            m_tutorialButton.SetActive(false);
+        }
+
         public override void HideScreen()
         {
             base.HideScreen();
