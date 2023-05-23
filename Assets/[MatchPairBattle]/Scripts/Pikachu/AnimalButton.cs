@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Pikachu
 {
-    public enum AnimalType
+    public enum ElementalType
     {
         None = 0,
         Fire = 1,
@@ -17,7 +17,7 @@ namespace Pikachu
 
     public class AnimalButton : MonoBehaviour
     {
-        [SerializeField] AnimalType m_type;
+        [SerializeField] ElementalType m_type;
         [SerializeField] bool m_isObstacle;
 
         [SerializeField] int m_coordinateX;
@@ -27,7 +27,7 @@ namespace Pikachu
         private PikachuTable m_pikachuTable;
         private RectTransform m_rectTransform;
         
-        public AnimalType Type
+        public ElementalType Type
         {
             get => m_type;
             set => m_type = value;            
@@ -101,7 +101,7 @@ namespace Pikachu
         public void OnHideButton()
         {
             m_isObstacle = false;
-            m_type = AnimalType.None;
+            m_type = ElementalType.None;
             Image.color = new Color(0, 0, 0, 0);
             
             this.GetComponent<Button>().interactable = false;

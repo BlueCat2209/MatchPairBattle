@@ -33,13 +33,12 @@ public class GameManagement : MonoBehaviour
 
     [Header("Avatar Properties")]
     [SerializeField] Transform m_avatarTransform;
-    [SerializeField] public Animator m_avatarAnimator;
-    [SerializeField] public SpriteLibrary m_spriteLibrary;
+    [SerializeField] Animator m_avatarAnimator;
+    [SerializeField] SpriteLibrary m_spriteLibrary;
 
     [Header("PlayTime Properties")]
     [SerializeField] float m_targetTime;
-    [SerializeField] Image m_countDownImage;
-    [SerializeField] Gradient m_gradientColor;    
+    [SerializeField] Image m_countDownImage;    
     private float m_currentTime;
     [Space]
 
@@ -52,8 +51,7 @@ public class GameManagement : MonoBehaviour
     [Space]
 
     [SerializeField] GameStatus m_currentStatus = GameStatus.INITIALIZING;
-    public enum GameStatus { VICTORY, DEFEATED, DRAW, PLAYING, INITIALIZING }
-    public int FinalPoint => (m_playerTable.ButtonAmountDefault - m_playerTable.CurrentButtonAmount) + (int)(m_targetTime - m_currentTime);                
+    public enum GameStatus { VICTORY, DEFEATED, DRAW, PLAYING, INITIALIZING }   
 
     private void OnEnable() => PhotonNetwork.NetworkingClient.EventReceived += OnEventReceive;
     private void OnDisable() => PhotonNetwork.NetworkingClient.EventReceived -= OnEventReceive;
@@ -184,7 +182,7 @@ public class GameManagement : MonoBehaviour
         // Extract data
         Vector2 startCor = (Vector2)data[0];
         Vector2 endCor = (Vector2)data[1];
-        AnimalType type = (AnimalType)((byte)data[2]);
+        ElementalType type = (ElementalType)((byte)data[2]);
         
         // Process data
         AnimalButton start = m_opponentTable.Table[(int)startCor.x, (int)startCor.y];
@@ -317,7 +315,7 @@ public class GameManagement : MonoBehaviour
             SendOptions.SendUnreliable
             );
     }
-    public void SendPlayerPairData(AnimalButton start, AnimalButton end, AnimalType type)
+    public void SendPlayerPairData(AnimalButton start, AnimalButton end, ElementalType type)
     {        
         CalculatePlayerSkill(type);
 
@@ -382,23 +380,23 @@ public class GameManagement : MonoBehaviour
     #endregion
 
     #region Game Process
-    private void CalculatePlayerSkill(AnimalType type)
+    private void CalculatePlayerSkill(ElementalType type)
     {
         switch (type)
         {
-            case AnimalType.Fire:
+            case ElementalType.Fire:
                 m_fireButtonSkill.StackSkill();
                 break;
-            case AnimalType.Ice:
+            case ElementalType.Ice:
                 m_iceButtonSkill.StackSkill();
                 break;
-            case AnimalType.Earth:
+            case ElementalType.Earth:
                 m_earthButtonSkill.StackSkill();
                 break;
-            case AnimalType.Wood:
+            case ElementalType.Wood:
                 m_woodButtonSkill.StackSkill();
                 break;
-            case AnimalType.Air:
+            case ElementalType.Air:
                 m_airButtonSkill.StackSkill();
                 break;
         }        
@@ -458,7 +456,7 @@ public class GameManagement : MonoBehaviour
         var targetButtonsType = new List<byte[]>();
         for (int i = 1; i <= 6; i++)
         {
-            var currentButtonsType = m_playerTable.GetAnimalTypeCoordinateList((AnimalType)i);
+            var currentButtonsType = m_playerTable.GetAnimalTypeCoordinateList((ElementalType)i);
             if (targetButtonsType.Count < currentButtonsType.Count)
             {
                 targetButtonsType = currentButtonsType;
@@ -483,7 +481,7 @@ public class GameManagement : MonoBehaviour
         var targetButtonsType = new List<byte[]>();
         for (int i = 1; i <= 6; i++)
         {
-            var currentButtonsType = m_opponentTable.GetAnimalTypeCoordinateList((AnimalType)i);
+            var currentButtonsType = m_opponentTable.GetAnimalTypeCoordinateList((ElementalType)i);
             if (targetButtonsType.Count < currentButtonsType.Count)
             {
                 targetButtonsType = currentButtonsType;
@@ -499,7 +497,7 @@ public class GameManagement : MonoBehaviour
     }
     private void CastEarthSkill()
     {
-        var skillTargets = m_opponentTable.GetAnimalTypeButtonList(AnimalType.None);
+        var skillTargets = m_opponentTable.GetAnimalTypeButtonList(ElementalType.None);
         var skill = Instantiate(m_earthButtonSkill.SkillPrefab, m_opponentTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
 
@@ -568,7 +566,7 @@ public class GameManagement : MonoBehaviour
     }
     public void HitEarthSkill()
     {
-        var skillTargets = m_playerTable.GetAnimalTypeButtonList(AnimalType.None);
+        var skillTargets = m_playerTable.GetAnimalTypeButtonList(ElementalType.None);
         var skill = Instantiate(m_earthButtonSkill.SkillPrefab, m_playerTable.transform, false);
         skill.transform.localPosition = Vector3.zero;
         

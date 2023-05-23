@@ -9,11 +9,10 @@ namespace Pikachu
         [Header("Matrix Properties")]        
         [SerializeField] AnimalButton[] m_buttonTypeList;
         [SerializeField] Vector2 m_tableSize;        
-        public AnimalButton[,] m_table;
+        private AnimalButton[,] m_table;
 
         public AnimalButton[,] Table => m_table;
-        public Vector2 TableSize => m_tableSize;
-        public int ButtonAmountDefault => (int)((m_tableSize.x - 2) * (m_tableSize.y - 2));
+        public Vector2 TableSize => m_tableSize;        
 
         [Header("Additional Properties")]                      
         [SerializeField] GameObject m_linePrefab;
@@ -150,7 +149,7 @@ namespace Pikachu
                 {
                     // Create button
                     var button = Instantiate(m_buttonTypeList[buttonCode[i, j]]);
-                    if (button.Type == AnimalType.None)
+                    if (button.Type == ElementalType.None)
                     {
                         button.transform.SetParent(m_emptyButtonHolder.transform, false);
                     }
@@ -174,7 +173,7 @@ namespace Pikachu
             Destroy(m_emptyButtonHolder);
             Destroy(m_normalButtonHolder);
         }
-        private List<Vector2> GetAnimalCoordinate(AnimalType targetType)
+        private List<Vector2> GetAnimalCoordinate(ElementalType targetType)
         {            
             var animalList = new List<Vector2>();
             for (int i = 0; i < m_tableSize.x; i++)
@@ -190,7 +189,7 @@ namespace Pikachu
             return animalList;
         }
 
-        public List<AnimalButton> GetAnimalTypeButtonList(AnimalType targetType)
+        public List<AnimalButton> GetAnimalTypeButtonList(ElementalType targetType)
         {
             // Get a list of animal button which has the same type with targetType
             var animalList = GetAnimalCoordinate(targetType);
@@ -204,7 +203,7 @@ namespace Pikachu
 
             return animalButtons;
         }
-        public List<byte[]> GetAnimalTypeCoordinateList(AnimalType targetType)
+        public List<byte[]> GetAnimalTypeCoordinateList(ElementalType targetType)
         {
             // Get a list of animal button which has the same type with targetType
             var animalList = GetAnimalCoordinate(targetType);
@@ -228,7 +227,7 @@ namespace Pikachu
             animalAmount[0] = 0;
             for (int i = 1; i < m_buttonTypeList.Length; i++)
             {
-                animalAmount[i] = GetAnimalCoordinate((AnimalType)i).Count;
+                animalAmount[i] = GetAnimalCoordinate((ElementalType)i).Count;
             }
 
             // Create a new table data by random the type of AnimalButton that different from None
@@ -238,7 +237,7 @@ namespace Pikachu
                 for (int j = 0; j < m_tableSize.y; j++)
                 {
                     newTable[i, j] = (byte)m_table[i, j].Type;
-                    if (m_table[i, j].Type != AnimalType.None)
+                    if (m_table[i, j].Type != ElementalType.None)
                     {
                         do
                         {
@@ -304,7 +303,7 @@ namespace Pikachu
         private bool CheckValidPair(AnimalButton button1, AnimalButton button2)
         {            
             if (button1.Type != button2.Type) return false;
-            if (button1.Type == AnimalType.None || button2.Type == AnimalType.None) return false;
+            if (button1.Type == ElementalType.None || button2.Type == ElementalType.None) return false;
 
             button1.IsObstacle = false; button2.IsObstacle = false;
 
